@@ -12,6 +12,7 @@ const App = () => {
           width={100} 
           margin={3}
           complete={() => alert('fuck')}
+          empty={() => console.log('empty')}
           transitionDuration={100}
           incrementValue={50} 
           decrementValue={10}

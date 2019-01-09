@@ -76,11 +76,12 @@ const ProgressBar = componentFromStream(prop$ => {
                 startWith(props.level),
                 scan((acc, change) => {
                     const complete = acc >= props.height
-                    const floor = acc <= 0 && change < 0
+                    const empty = acc <= 0 && change < 0
                     change = change > (props.height - acc) ? props.height - acc : change
                     
                     if (complete) props.complete()
-                    return floor ? 0 : acc + (complete ? (-1 * acc) : change)
+                    if (empty) props.empty()
+                    return empty ? 0 : acc + (complete ? (-1 * acc) : change)
                 }),
                 map(level => ({ 
                     level,
