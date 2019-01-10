@@ -67,7 +67,18 @@ function BarPresentational(props) {
 const ProgressBar = componentFromStream(prop$ => (
     prop$.pipe(
         switchMap(props => {
-            const click$ = props.eventStream
+            let click$
+            let eventHandler
+
+            if(!props.eventStream) {
+                const { stream, handler } = createEventHandler()
+                click$ = stream
+                eventHandler = handler
+            } else {
+                click$ = props.eventStream
+                eventHandler = props.eventHandler
+            }
+
             const increase$ = click$.pipe(mapTo(props.incrementValue))
             const decrease$ = interval(props.transitionDuration)
                 .pipe(mapTo(-1 * props.decrementValue))
@@ -87,8 +98,8 @@ const ProgressBar = componentFromStream(prop$ => (
                 map(level => ({ 
                     level,
                     color: props.color || 'coral',
-                    eventHandler: props.eventHandler, 
-                    eventStream: props.eventStream,
+                    eventHandler,
+                    eventStream: click$,
                     onClickEvent: props.onClickEvent || true,
                     margin: props.margin, 
                     height: props.height,

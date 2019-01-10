@@ -4,7 +4,6 @@ import { createEventHandler } from 'recompose'
 
 const App = () => {
   const { stream: click$, handler: eventHandler } = createEventHandler()
-  setInterval(eventHandler, 1000)
 
   return (
     <div className="App" style={{ display: 'flex' }}>
@@ -42,8 +41,6 @@ const App = () => {
           borderRadius={15}
           color="linear-gradient(blue, purple)"
           onClickEvent={true}
-          eventStream={click$}
-          eventHandler={eventHandler}
         />
       </div>
       <button onClick={eventHandler}>click</button>
