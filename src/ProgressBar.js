@@ -17,17 +17,18 @@ const OuterBox = posed.div({
     }
 })
 
-const BarPresentational = props => {
+function BarPresentational(props) {
     const { 
         level, 
-        eventHandler,  
+        eventHandler,
         margin, 
         height, 
         width,
         borderRadius,
         border,
         color,
-        transitionDuration
+        transitionDuration,
+        onClickEvent
     } = props
 
     const styles = {
@@ -37,15 +38,17 @@ const BarPresentational = props => {
             height: height + (margin * 2),
             display: 'flex',
             alignItems: 'flex-end',
+            justifyContent: 'center',
             borderRadius
         },
         inner: {
             background: color,
-            width: width,
+            width: level > (borderRadius * 1) ? width : width - (borderRadius),
             height: level,
             margin: margin,
             borderRadius: borderRadius - margin,
-            transitionProperty: 'height',
+            opacity: level > (borderRadius * 1) ? 1 : 0,
+            transitionProperty: 'height width opacity',
             transitionDuration: transitionDuration / 1000 + 's',
             transitionTimingFunction: 'linear'
         }
@@ -54,23 +57,21 @@ const BarPresentational = props => {
     return(
         <OuterBox 
             style={styles.container} 
-            onClick={eventHandler}
+            onClick={onClickEvent ? eventHandler : () => {}}
         >
             <div style={styles.inner}></div>
         </OuterBox>
     )
 }
 
-const ProgressBar = componentFromStream(prop$ => {
-    const { stream: click$, handler: eventHandler } = createEventHandler()
-
-    return prop$.pipe(
+const ProgressBar = componentFromStream(prop$ => (
+    prop$.pipe(
         switchMap(props => {
+            const click$ = props.eventStream
             const increase$ = click$.pipe(mapTo(props.incrementValue))
             const decrease$ = interval(props.transitionDuration)
                 .pipe(mapTo(-1 * props.decrementValue))
             const change$ = merge(increase$, decrease$)
-            console.log(props)
 
             return change$.pipe(
                 startWith(props.level),
@@ -86,18 +87,20 @@ const ProgressBar = componentFromStream(prop$ => {
                 map(level => ({ 
                     level,
                     color: props.color || 'coral',
-                    eventHandler, 
+                    eventHandler: props.eventHandler, 
+                    eventStream: props.eventStream,
+                    onClickEvent: props.onClickEvent || true,
                     margin: props.margin, 
                     height: props.height,
                     width: props.width,
                     borderRadius: props.borderRadius || props.width / 20,
                     border: props.border || "1px solid black",
-                    transitionDuration: props.transitionDuration
+                    transitionDuration: props.transitionDuration,
                 })),
                 map(BarPresentational)
             )
         })
     )
-})
+))
 
 export default ProgressBar
