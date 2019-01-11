@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import ProgressBar from './ProgressBar'
+import Canvas from './Canvas'
 import { createEventHandler } from 'recompose'
 import posed from 'react-pose'
+
 
 const BarContainer = posed.div({
   hoverable: true,
@@ -17,16 +19,19 @@ const BarContainer = posed.div({
 
 const App = () => {
   const { stream: click$, handler: eventHandler } = createEventHandler()
-  const ref = React.createRef()
-  const focusOnInput = () => ref.current.focus()
+  const input = React.createRef()
 
-  useEffect(focusOnInput)
+  const focusOnInput = () => input.current.focus()
+
+  useEffect(() => {
+    focusOnInput()
+  })
 
   return (
     <div className="App" style={{ display: 'flex' }} onClick={focusOnInput}>
       <input 
         type="text"
-        ref={ref} 
+        ref={input} 
         onKeyPress={eventHandler}
         style={{ height: 0 }} 
       />
@@ -61,6 +66,7 @@ const App = () => {
           decrementValue={10}
         />
       </div>
+      <Canvas width="400" height="400" />
     </div>
   )
 }
