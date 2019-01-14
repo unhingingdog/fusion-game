@@ -1,7 +1,9 @@
 import * as three from 'three'
 import particleImage from './particle.png'
+import Particle from './particle'
+import Attractor from './attractor';
 
-export default canvas => {
+const setup = canvas => {
     const renderer = new three.WebGLRenderer({ canvas, antialias: true })
     renderer.setClearColor(0x000000)
     renderer.setPixelRatio(window.devicePixelRatio)
@@ -15,58 +17,63 @@ export default canvas => {
     )
 
     const scene = new three.Scene()
-
     const light = new three.AmbientLight(0xffffff, 0.5)
     scene.add(light)
+    return { scene, camera, renderer }
+}
 
-    const light1 = new three.PointLight(0xffffff, 0.5)
-    scene.add(light1)
-
-    const particleCount = 50000
+export default canvas => {
+    const { scene, camera, renderer } = setup(canvas)
+    const particleCount = 5000
     const geo = new three.Geometry()
     const particles = []
-    // const pMaterial = new three.ParticleBasicMaterial({
-    //     color: 0xFFFFFF,
-    //     size: 20,
-    //     map: three.ImageUtils.loadTexture(particleImage),
-    //     blending: three.AdditiveBlending,
-    //     transparent: true
-    // })
 
     for (let i = 0; i < particleCount; i++) {
-        const pX = Math.random() * -100
-        const pY = Math.random() * -100
-        const pZ = Math.random() * -100
 
-        const particle = {
-            position: new three.Vector3(pX, pY, pZ),
-            velocity: new three.Vector3(Math.random() * 10, 0.06, Math.random() * 10),
-            acceleration: new three.Vector3(0, -0.001, 0)
-        }
+        const particle = new Particle({
+            position: [-120 + (i * 0.001), 20 + Math.random() * 20, -20 + Math.random() * 20],
+            velocity: [0.1,Math.random() / 10, Math.random() / 10],
+            acceleration: [0, 0, 0]
+        })
 
         particles.push(particle)
         geo.vertices.push(particle.position)
     }
 
-    const mat = new three.PointsMaterial({color:0xffffff,size: 1})
+    const mat = new three.PointsMaterial({color:0xffffff,size: 2})
     const mesh = new three.Points(geo,mat)
-    mesh.position.z = -1000
-    scene.add(mesh)
 
-    // const particleSystem = new three.ParticleSystem(particles, pMaterial)
-    // particleSystem.position.z = -300
-    // particleSystem.sortParticles = true
+    const attractorGeo = new three.Geometry()
+
+    const attractors = []
+
+    for (let i = 0; i < 10; i++) {
+        const attractor = new Attractor([(i * 20) -80, 20, 0], 0.5)
+        attractors.push(attractor)
+        attractorGeo.vertices.push(attractor.position)
+    }
     
+    const attractorMat = new three.PointsMaterial({color:0x00ff00,size: 2})
+    const attractorMesh = new three.Points(attractorGeo, attractorMat)
 
-    // scene.add(particleSystem)
+
+    mesh.position.z = -500
+    attractorMesh.position.z = -500
+    scene.add(mesh)
+    scene.add(attractorMesh)
 
     const render = () => {
         particles.forEach(particle => {
-            particle.velocity.add(particle.acceleration)
-            particle.position.add(particle.velocity)
+            if ((Date.now() - particle.born) > 10000) {
+                if (particle.velocity.lengthSq() < 0.05) particle.reset()
+            }
+            attractors.forEach(attractor => {
+                const attractionForce = attractor.attract(particle)
+                particle.applyForce(attractionForce)
+            })
+            particle.move()
         })
 
-        // particleSystem.geometry.verticesNeedUpdate = true
         mesh.geometry.verticesNeedUpdate = true
         
         renderer.render(scene, camera)
@@ -74,7 +81,4 @@ export default canvas => {
     }
 
     requestAnimationFrame(render)
-
-
-    
 }
