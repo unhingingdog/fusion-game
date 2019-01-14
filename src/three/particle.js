@@ -7,7 +7,7 @@ export default class Particle {
         this.velocity = new three.Vector3(v[0], v[1], v[2])
         this.acceleration = new three.Vector3(a[0], a[1], a[2])
         this.mass = 1
-        this.dragCoefficient = 0.0001
+        this.dragCoefficient = 1
         this.born = Date.now()
     }
 
@@ -20,14 +20,7 @@ export default class Particle {
         this.bounce()
         this.velocity.add(this.acceleration)
         this.position.add(this.velocity)
-        this.applyForce(this.drag())
         this.acceleration.set(0,0,0)
-    }
-
-    drag() {
-        const dragMagnitude = this.velocity.clone().lengthSq() * this.dragCoefficient
-        const drag = this.velocity.clone().multiplyScalar(-1).normalize()
-        return drag.multiplyScalar(dragMagnitude)
     }
 
     reset(initialPosition) {
