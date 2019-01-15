@@ -12,4 +12,8 @@ export default class Attractor extends Particle {
         const force = this.position.clone().sub(particle.position).normalize().multiplyScalar(strength)
         return force
     }
+
+    getDistanceTo(particle) {
+        return this.position.distanceTo(particle.position)
+    }
 }

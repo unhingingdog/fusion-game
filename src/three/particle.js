@@ -16,6 +16,16 @@ export default class Particle {
         this.bounds = properties.bounds
     }
 
+    explicitlySetPosition(position) {
+        if (position.x) {
+            const { x, y, z } = position
+            this.position.set(x, y, z)
+            return
+        }
+
+        this.position.set(...position)
+    }
+
     applyForce(forceVector) {
         const f = forceVector.divideScalar(this.mass)
         this.acceleration = this.acceleration.add(f)
@@ -29,8 +39,8 @@ export default class Particle {
     }
 
     reset(resetPosition, resetVelocity) {
-        this.position.set(resetPosition || this.initialPosition)
-        this.velocity.set(resetVelocity || this.initialVelocity)
+        this.position.set(...this.initialPosition)
+        this.velocity.set(...this.initialVelocity)
         this.acceleration.set(0, 0, 0)
         this.born = Date.now()
     }

@@ -24,30 +24,35 @@ const setup = canvas => {
 export default canvas => {
     const { scene, camera, renderer } = setup(canvas)
 
-    const particleSystem = new ParticleSystem({ dragCoefficient: 0.001 })
+    const plotCircle = (x0, y0, radius, n) => {
+        const points = []
+        for (let i = 0; i < n; i++) {
+            const x = x0 + radius * Math.cos(2 * Math.PI * i / n)
+            const y = y0 + radius * Math.sin(2 * Math.PI * i / n)
 
-    const attractorSet = new Array(50).fill(0)
-        .map((attractor, index) => ([index * 4, 1 + ((index * index) / 10), 0]))
+            points.push([x, y, 0])
+        } 
+        
+        return points
+    }
 
-    particleSystem.generateParticles({
-        particleCount: 10000,
-        generatedInitalPositions: { origin: [-10, -20, 20], spread: [1, 1, 1] },
-        initialVelocity: [0.1, 0.1, 0.1],
-        // positionsSet: [[0, 0, 0], [200, 200, 200]]
+    // const attractorSet = plotCircle(0, 0, 30, 50)
+    const particleSet = plotCircle(0, 0, 40, 1000)
+
+    const particleSystem = new ParticleSystem({ 
+        dragCoefficient: 0.05,
+        // customForces: 
     })
-
-    particleSystem.generateAttractors({
-        particleCount: 10,
-        generatedInitialPositions: { origin: [100, 100, 100], spread: [10, 10, 10] },
+    particleSystem.generateParticles({
         initialVelocity: [0, 0, 0],
-        positionsSet: attractorSet,
-        mass: 0.1
+        particleCount: 5000,
+        generatedInitalPositions: { origin: [10, 10, 10], spread: [10, 10, 10] },
     })
 
     const geo = new three.Geometry()
-    const attractorGeo = new three.Geometry()
+    // const attractorGeo = new three.Geometry()
     geo.vertices = particleSystem.getParticlePositions()
-    attractorGeo.vertices = particleSystem.getAttractorPositions()
+    // attractorGeo.vertices = particleSystem.getAttractorPositions()
 
     const mat = new three.PointsMaterial({
         // color:0xffffff,
@@ -60,25 +65,34 @@ export default canvas => {
 
     const mesh = new three.Points(geo,mat)
     
-    const attractorMat = new three.PointsMaterial({color:0x00ff00,size: 2})
-    const attractorMesh = new three.Points(attractorGeo, attractorMat)
+    // const attractorMat = new three.PointsMaterial({color:0x00ff00, size: 1})
+    // const attractorMesh = new three.Points(attractorGeo, attractorMat)
 
 
-    mesh.position.z = -500
-    attractorMesh.position.z = -500
+
+    mesh.position.z = -300
+    // attractorMesh.position.z = -300
     scene.add(mesh)
-    scene.add(attractorMesh)
+    // scene.add(attractorMesh)
 
     const render = () => {
+        const posits = particleSystem.getParticlePositions().map(p => ([p.x,p.y,p.z]))
+        const forces = posits.map(p => {
+            return [Math.cos(p[0])/ 1000, Math.sin(p[1])/ 1000, Math.tan(p[2]) / 1000]
+        })
 
-        particleSystem.move()
+        particleSystem.move(forces)
 
         mesh.geometry.verticesNeedUpdate = true
-        attractorMesh.verticesNeedUpdate = true
+        // attractorMesh.verticesNeedUpdate = true
         
         renderer.render(scene, camera)
         requestAnimationFrame(render)
     }
+
+    // const centre = new three.Vector3(1, 1, 1)
+    // const angles = particleSystem.particles.map(particle => particle.position.angleTo(centre))
+    // // console.log(angles.map(angle => Math.sin(angle)))
 
     requestAnimationFrame(render)
 }

@@ -9,6 +9,7 @@ export default class ParticleSystem {
         this.particleResetCondition = particleResetCondition
         this.dragCoefficient = dragCoefficient || 1
         this.bounds = bounds || [200, 200, 200]
+        this.customForcesSet = null
     }
 
     generateParticles({
@@ -85,32 +86,46 @@ export default class ParticleSystem {
         return drag.multiplyScalar(dragMagnitude)
     }
 
-    move(forces = []) {
-        this.particles.forEach(particle => {
+    handleCustomForcesSet(customForcesSet) {
+        if (this.particles.length !== customForcesSet.length) {
+            throw `There are ${customForcesSet.length} forces 
+            and ${this.particles.length}. Must be equal.`
+        }
+
+        if (!this.customForcesSet) {
+            this.customForcesSet = customForcesSet.map(force => (
+                new three.Vector3(...force) 
+            ))
+        } else {
+            this.customForcesSet.forEach((force, index) => {
+                force.set(...customForcesSet[index])
+            })
+        }
+    }
+
+    move(customForcesSet) {
+        if (customForcesSet) this.handleCustomForcesSet(customForcesSet)
+
+        this.particles.forEach((particle, index) => {
             if (this.particleResetCondition) {
                 this.resetParticleOnConditions(particle)
             }
 
-            if (forces[0]) {
-                forces.forEach(force =>  {
-                    if (!force.x) force = new three.Vector3(...force)
-                    particle.applyForce(force)
-                })
+            if (this.customForcesSet[0]) {
+                particle.applyForce(this.customForcesSet[index])
             }
 
             particle.applyForce(this.generateDrag(particle))
 
             if (this.attractors[0]) {
-                this.attractors.forEach(attractor => 
+                this.attractors.forEach(attractor => {
                     particle.applyForce(attractor.attract(particle))
-                )
+                })
             }
 
             particle.move()
         })
     }
-
-    
 
     resetParticleOnConditions(particle) {
         if (this.particleResetCondition(particle)) particle.reset()
@@ -124,3 +139,17 @@ export default class ParticleSystem {
         return this.attractors.map(particle => particle.position)
     }
 }
+
+
+
+    // if (this.attractors[0]) {
+    //     // let closestAttractorDistance = Infinity
+
+    //     this.attractors.forEach(attractor => {
+    //         particle.applyForce(attractor.attract(particle))
+    //         // if (particle.position.distanceTo(attractor.position) < closestAttractorDistance) {
+    //         //     closestAttractorDistance = particle.position.distanceTo(attractor.position)
+    //         // }
+    //     })
+    //     // if (closestAttractorDistance > 40) particle.reset()
+    // }
