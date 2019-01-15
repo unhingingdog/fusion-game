@@ -1,13 +1,14 @@
 import Particle from './particle'
+import Attractor from './attractor'
 import * as three from 'three'
 
 export default class ParticleSystem {
-    constructor({ particleResetCondition, attractors, dragCoefficient }) {
+    constructor({ particleResetCondition, dragCoefficient, bounds }) {
         this.particles = []
+        this.attractors = []
         this.particleResetCondition = particleResetCondition
-        this.attractors = attractors || []
         this.dragCoefficient = dragCoefficient || 1
-        this.particleResetCondition = particleResetCondition
+        this.bounds = bounds || [200, 200, 200]
     }
 
     generateParticles({
@@ -15,45 +16,68 @@ export default class ParticleSystem {
         initialAcceleration,
         initialVelocity,
         generatedInitalPositions,
-        setPositions
+        positionsSet,
+        isAttractor
     }) {
         initialVelocity = initialVelocity || [0, 0, 0]
         initialAcceleration = initialAcceleration || [0, 0, 0]
         generatedInitalPositions = generatedInitalPositions || 
             { origin: [0, 0, 0], spread: [1, 1, 1] }
+        const type = isAttractor ? Attractor : Particle
 
-        if (setPositions) {
+        const positions = positionsSet || this.generateParticlePositions( 
+            particleCount, generatedInitalPositions 
+        )
 
+        const items = positions.map(position => {
+            return new type({
+                position,
+                velocity: [
+                    initialVelocity[0], 
+                    initialVelocity[1], 
+                    initialVelocity[2]
+                ],
+                acceleration: [
+                    initialAcceleration[0],
+                    initialAcceleration[1],
+                    initialAcceleration[2],
+                ]
+            })
+        })
+
+        if (isAttractor) {
+            this.attractors = [...this.attractors, ...items]
         } else {
-            const { origin, spread } = generatedInitalPositions
-
-            for (let i = 0; i < (particleCount || this.particleCount); i++) {
-                this.particles.push(
-                        new Particle({
-                        position: [
-                            origin[0] + (Math.random() * spread[0]), 
-                            origin[1] + (Math.random() * spread[1]), 
-                            origin[2] + (Math.random() * spread[2]), 
-                        ],
-                        velocity: [
-                            initialVelocity[0], 
-                            initialVelocity[1], 
-                            initialVelocity[2]
-                        ],
-                        acceleration: [
-                            initialAcceleration[0],
-                            initialAcceleration[1],
-                            initialAcceleration[2],
-                        ]
-                    })
-                )
-            }
+            this.particles = [...this.particles, ...items]
         }
     }
 
-    // generateAttractors(attractorCount, positions = ) {
+    generateParticlePositions(particleCount, generatedInitalPositions) {
+        const { origin, spread } = generatedInitalPositions
+        return new Array(particleCount).fill(particleCount)
+            .map(position => ([
+                origin[0] + (Math.random() * spread[0]), 
+                origin[1] + (Math.random() * spread[1]), 
+                origin[2] + (Math.random() * spread[2])
+            ]))
+    }
 
-    // }
+    generateAttractors({        
+        particleCount, 
+        initialAcceleration,
+        initialVelocity,
+        generatedInitalPositions,
+        positionsSet
+    }) {
+        this.generateParticles({
+            particleCount, 
+            initialAcceleration,
+            initialVelocity,
+            generatedInitalPositions,
+            positionsSet,
+            isAttractor: true
+        })
+    }
 
     generateDrag(particle) {
         const dragMagnitude = particle.velocity.clone().lengthSq() * this.dragCoefficient
@@ -68,7 +92,10 @@ export default class ParticleSystem {
             }
 
             if (forces[0]) {
-                forces.forEach(force => particle.applyForce(force))
+                forces.forEach(force =>  {
+                    if (!force.x) force = new three.Vector3(...force)
+                    particle.applyForce(force)
+                })
             }
 
             particle.applyForce(this.generateDrag(particle))
@@ -78,6 +105,7 @@ export default class ParticleSystem {
                     particle.applyForce(attractor.attract(particle))
                 )
             }
+
             particle.move()
         })
     }
@@ -88,5 +116,9 @@ export default class ParticleSystem {
 
     getParticlePositions() {
         return this.particles.map(particle => particle.position)
+    }
+
+    getAttractorPositions() {
+        return this.attractors.map(particle => particle.position)
     }
 }

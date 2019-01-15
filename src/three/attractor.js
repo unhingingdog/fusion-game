@@ -1,9 +1,8 @@
-import * as three from 'three'
+import Particle from './particle'
 
-export default class Attractor {
-    constructor(position, mass) {
-        this.position = new three.Vector3(position[0], position[1], position[2])
-        this.mass = mass
+export default class Attractor extends Particle {
+    constructor(properties) {
+        super(properties)
         this.G = 1
     }
 

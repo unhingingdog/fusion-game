@@ -27,25 +27,48 @@ const setup = canvas => {
 export default canvas => {
     const { scene, camera, renderer } = setup(canvas)
 
-    const attractorGeo = new three.Geometry()
-    const attractors = []
+    const particleSystem = new ParticleSystem({ dragCoefficient: 0.001 })
 
-    for (let i = 0; i < 40; i++) {
-        const attractor = new Attractor([(i * 5) -80, 20, i * 10], 2)
-        attractors.push(attractor)
-        attractorGeo.vertices.push(attractor.position)
-    }
+    const attractorSet = new Array(30).fill(0)
+        .map((attractor, index) => ([index * 4, 0 * 10, 0]))
 
-    const geo = new three.Geometry()
-
-    const particleSystem = new ParticleSystem({ attractors, dragCoefficient: 0.0001 })
+    const attractorSet2 = new Array(10).fill(0)
+        .map((attractor, index) => ([0, index * 4, 0]))
 
     particleSystem.generateParticles({
-        particleCount: 15000,
-        generatedInitialPositions: { origin: [0, 0, 0], spread: [1, 1, 1] },
-        initialVelocity: [0.2, 0.1, 0.2]
+        particleCount: 4000,
+        generatedInitalPositions: { origin: [-10, -20, 20], spread: [1, 1, 1] },
+        initialVelocity: [0.1, 0.1, 0.1],
+        // positionsSet: [[0, 0, 0], [200, 200, 200]]
     })
+
+    particleSystem.generateParticles({
+        particleCount: 4000,
+        generatedInitalPositions: { origin: [10, 20, -20], spread: [1, 1, 1] },
+        initialVelocity: [0.1, 0.1, 0.1],
+        // positionsSet: [[0, 0, 0], [200, 200, 200]]
+    })
+
+    particleSystem.generateAttractors({
+        particleCount: 10,
+        generatedInitialPositions: { origin: [100, 100, 100], spread: [10, 10, 10] },
+        initialVelocity: [0, 0, 0],
+        positionsSet: attractorSet,
+        mass: 0.1
+    })
+
+    particleSystem.generateAttractors({
+        particleCount: 10,
+        generatedInitialPositions: { origin: [100, 100, 100], spread: [10, 10, 10] },
+        initialVelocity: [0, 0, 0],
+        positionsSet: attractorSet2,
+        mass: 0.1
+    })
+
+    const geo = new three.Geometry()
+    const attractorGeo = new three.Geometry()
     geo.vertices = particleSystem.getParticlePositions()
+    attractorGeo.vertices = particleSystem.getAttractorPositions()
 
     const mat = new three.PointsMaterial({color:0xffffff,size: 2})
     const mesh = new three.Points(geo,mat)
@@ -64,6 +87,7 @@ export default canvas => {
         particleSystem.move()
 
         mesh.geometry.verticesNeedUpdate = true
+        attractorMesh.verticesNeedUpdate = true
         
         renderer.render(scene, camera)
         requestAnimationFrame(render)
