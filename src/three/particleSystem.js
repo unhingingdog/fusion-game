@@ -110,6 +110,8 @@ export default class ParticleSystem {
         })
     }
 
+    
+
     resetParticleOnConditions(particle) {
         if (this.particleResetCondition(particle)) particle.reset()
     }

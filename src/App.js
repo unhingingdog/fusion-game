@@ -41,7 +41,7 @@ const App = () => {
           height={400}
           width={30} 
           margin={5}
-          complete={() => alert('fuck')}
+          complete={() => alert('hi')}
           empty={() => {}}
           transitionDuration={100}
           incrementValue={50} 
