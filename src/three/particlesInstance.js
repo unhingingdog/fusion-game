@@ -38,12 +38,10 @@ export default class ParticlesInstance {
                 bounds
             })
         })
-        this.customForcesSet = []
         this.dragCoefficient = dragCoefficient || 0.1
         this.attractors = attractors || []
         this.resetCondition = resetCondition
         this.bounds = bounds
-        //replace with customforcefucntion
     }
 
     generateParticlePositions(particleCount, generatedInitalPositions) {
@@ -56,16 +54,14 @@ export default class ParticlesInstance {
             ]))
     }
 
-    move(customForcesSet) {
-        if (customForcesSet) this.handleCustomForcesSet(customForcesSet)
-
-        this.particles.forEach((particle, index) => {
+    move(customForce) {
+        this.particles.forEach(particle => {
             if (this.resetCondition) {
                 this.resetParticleOnConditions(particle)
             }
     
-            if (this.customForcesSet[0]) {
-                particle.applyForce(this.customForcesSet[index])
+            if (customForce) {
+                particle.applyForce(customForce(particle))
             }
     
             particle.applyForce(this.generateDrag(particle))
@@ -88,15 +84,6 @@ export default class ParticlesInstance {
         const dragMagnitude = particle.velocity.clone().lengthSq() * this.dragCoefficient
         const drag = particle.velocity.clone().multiplyScalar(-1).normalize()
         return drag.multiplyScalar(dragMagnitude)
-    }
-
-    handleCustomForcesSet(customForcesSet) {
-        if (this.particles.length !== customForcesSet.length) {
-            throw `There are ${customForcesSet.length} forces 
-            and ${this.particles.length} particles. These must be equal.`
-        }
-    
-        this.customForcesSet = customForcesSet
     }
 
     resetParticleOnConditions(particle) {

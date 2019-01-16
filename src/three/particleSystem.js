@@ -58,9 +58,9 @@ export default class ParticleSystem {
         })
     }
 
-    move(customParticlesForcesSet, customAttractorsForcesSet) {
-        this.particleBatches.forEach(batch => batch.move(customParticlesForcesSet))
-        this.attractorBatches.forEach(batch => batch.move(customAttractorsForcesSet))
+    move(customParticleForce, customAttractorForce) {
+        this.particleBatches.forEach(batch => batch.move(customParticleForce))
+        this.attractorBatches.forEach(batch => batch.move(customAttractorForce))
     }
 
     getParticlePositions() {
