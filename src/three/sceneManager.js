@@ -36,23 +36,68 @@ export default canvas => {
         return points
     }
 
+
+
     // const attractorSet = plotCircle(0, 0, 30, 50)
-    const particleSet = plotCircle(0, 0, 40, 1000)
+    const circle = plotCircle(0, 0, 45, 1000)
 
     const particleSystem = new ParticleSystem({ 
-        dragCoefficient: 0.05,
+        dragCoefficient: 0.001,
         // customForces: 
     })
     particleSystem.generateParticles({
-        initialVelocity: [0, 0, 0],
-        particleCount: 5000,
-        generatedInitalPositions: { origin: [10, 10, 10], spread: [10, 10, 10] },
+        initialVelocity: [0, 0.1, 0.2],
+        particleCount: 2500,
+        generatedInitalPositions: { origin: [15, 10, -20], spread: [2, 2, 2] }
     })
 
+    particleSystem.generateParticles({
+        initialVelocity: [0, 0.1, -0.1],
+        particleCount: 2500,
+        generatedInitalPositions: { origin: [10, 20, 20], spread: [2, 2, 2] }
+    })
+
+    
+
+    const circleatt = plotCircle(0, 0, 20, 30)
+
+    // particleSystem.generateParticles({
+    //     positionsSet: circleatt.slice(15),
+    //     isAttractor: true,
+    //     mass: 1
+    // })
+    particleSystem.generateParticles({
+        positionsSet: [[0,0,0]],
+        isAttractor: true,
+        mass: 50
+    })
+
+
+
+    const getAngularForce = (angleIncrease, centrePosition, particlePosition) => {
+        particlePosition = new three.Vector2(particlePosition.x, particlePosition.y)
+
+        const theta = particlePosition.angle(centrePosition) + angleIncrease
+        const hyp = particlePosition.distanceTo(centrePosition)
+
+
+        const x = hyp * Math.cos(theta)
+        const y = hyp * Math.sin(theta)
+
+        const next = new three.Vector3(x,y,0)
+
+        const result = particlePosition.sub(next)
+
+        return new three.Vector3(result.x, result.y, 0)
+    }
+
+    const positions = particleSystem.getParticlePositions()
+    const centre = new three.Vector2(0.000001, 0.000001, 0.000001)
+
     const geo = new three.Geometry()
-    // const attractorGeo = new three.Geometry()
+    const attractorGeo = new three.Geometry()
     geo.vertices = particleSystem.getParticlePositions()
-    // attractorGeo.vertices = particleSystem.getAttractorPositions()
+    attractorGeo.vertices = particleSystem.getAttractorPositions()
 
     const mat = new three.PointsMaterial({
         // color:0xffffff,
@@ -65,23 +110,31 @@ export default canvas => {
 
     const mesh = new three.Points(geo,mat)
     
-    // const attractorMat = new three.PointsMaterial({color:0x00ff00, size: 1})
-    // const attractorMesh = new three.Points(attractorGeo, attractorMat)
+    const attractorMat = new three.PointsMaterial({color:0x00ff00, size: 1})
+    const attractorMesh = new three.Points(attractorGeo, attractorMat)
 
 
 
-    mesh.position.z = -300
-    // attractorMesh.position.z = -300
+    mesh.position.z = -200
+    attractorMesh.position.z = -200
     scene.add(mesh)
-    // scene.add(attractorMesh)
+    scene.add(attractorMesh)
+
+    let boost = false
+    setInterval(() => boost = true, 10000)
 
     const render = () => {
-        const posits = particleSystem.getParticlePositions().map(p => ([p.x,p.y,p.z]))
-        const forces = posits.map(p => {
-            return [Math.cos(p[0])/ 1000, Math.sin(p[1])/ 1000, Math.tan(p[2]) / 1000]
-        })
+
+        let forces = null
+
+        if (boost) {
+            forces = positions.map(position => getAngularForce(0.0001, centre, position))
+        }
 
         particleSystem.move(forces)
+
+        forces = null
+        boost = false
 
         mesh.geometry.verticesNeedUpdate = true
         // attractorMesh.verticesNeedUpdate = true
@@ -89,10 +142,5 @@ export default canvas => {
         renderer.render(scene, camera)
         requestAnimationFrame(render)
     }
-
-    // const centre = new three.Vector3(1, 1, 1)
-    // const angles = particleSystem.particles.map(particle => particle.position.angleTo(centre))
-    // // console.log(angles.map(angle => Math.sin(angle)))
-
     requestAnimationFrame(render)
 }

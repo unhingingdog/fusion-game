@@ -2,6 +2,11 @@ import Particle from './particle'
 import Attractor from './attractor'
 import * as three from 'three'
 
+// Todo: pull reset condition and custom forces set out of constructor. Move to 
+// particle batch property associated with each particle generation. These will
+// then be called with  F generateParticles. Possibly move each particle generation
+// into ParticleInstance class.
+
 export default class ParticleSystem {
     constructor({ particleResetCondition, dragCoefficient, bounds }) {
         this.particles = []
@@ -9,7 +14,7 @@ export default class ParticleSystem {
         this.particleResetCondition = particleResetCondition
         this.dragCoefficient = dragCoefficient || 1
         this.bounds = bounds || [200, 200, 200]
-        this.customForcesSet = null
+        this.customForcesSet = []
     }
 
     generateParticles({
@@ -92,15 +97,21 @@ export default class ParticleSystem {
             and ${this.particles.length}. Must be equal.`
         }
 
-        if (!this.customForcesSet) {
-            this.customForcesSet = customForcesSet.map(force => (
-                new three.Vector3(...force) 
-            ))
-        } else {
-            this.customForcesSet.forEach((force, index) => {
-                force.set(...customForcesSet[index])
-            })
-        }
+        this.customForcesSet = customForcesSet
+
+        // if (!this.customForcesSet[0]) {
+        //     this.customForcesSet = customForcesSet 
+        // } else {
+        //     this.customForcesSet.forEach((force, index) => {
+        //         console.log(force)
+        //         if (force.x) {
+        //             const { x, y, z } = customForcesSet[index]
+        //             force.set(x, y, z)
+        //         } else {
+        //             force.set(...customForcesSet[index])
+        //         }
+        //     })
+        // }
     }
 
     move(customForcesSet) {
