@@ -1,6 +1,7 @@
 import * as three from 'three'
 import particleImage from './particle.png'
 import ParticleSystem from './particleSystem';
+import ParticlesInstance from './particlesInstance'
 
 const setup = canvas => {
     const renderer = new three.WebGLRenderer({ canvas, antialias: true })
@@ -35,6 +36,25 @@ export default canvas => {
         
         return points
     }
+
+    const instance = new ParticlesInstance({
+        count: 100, 
+        generatedInitalPositions: { origin: [0,0,0], spread: [2,2,2] },
+        isAttractor: false,
+    })
+
+    console.log(instance)
+
+
+
+
+
+
+
+
+
+
+
 
 
 

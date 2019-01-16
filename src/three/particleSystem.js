@@ -98,20 +98,6 @@ export default class ParticleSystem {
         }
 
         this.customForcesSet = customForcesSet
-
-        // if (!this.customForcesSet[0]) {
-        //     this.customForcesSet = customForcesSet 
-        // } else {
-        //     this.customForcesSet.forEach((force, index) => {
-        //         console.log(force)
-        //         if (force.x) {
-        //             const { x, y, z } = customForcesSet[index]
-        //             force.set(x, y, z)
-        //         } else {
-        //             force.set(...customForcesSet[index])
-        //         }
-        //     })
-        // }
     }
 
     move(customForcesSet) {
