@@ -32,7 +32,7 @@ export default class Particle {
     }
 
     move() {
-        if (this.bounds) this.bounce()
+        if (this.bounds[0]) this.bounce()
         this.velocity.add(this.acceleration)
         this.position.add(this.velocity)
         this.acceleration.set(0,0,0)

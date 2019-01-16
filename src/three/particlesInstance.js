@@ -1,6 +1,5 @@
 import Particle from './particle'
 import Attractor from './attractor'
-import * as three from 'three'
 
 export default class ParticlesInstance {
     constructor({
@@ -12,7 +11,8 @@ export default class ParticlesInstance {
         isAttractor,
         dragCoefficient,
         attractors,
-        resetCondition
+        resetCondition,
+        bounds
     }) {
         this.count = count
         this.initialAcceleration = initialAcceleration || [0, 0, 0]
@@ -34,13 +34,15 @@ export default class ParticlesInstance {
                     this.initialAcceleration[0],
                     this.initialAcceleration[1],
                     this.initialAcceleration[2],
-                ]
+                ],
+                bounds
             })
         })
         this.customForcesSet = []
         this.dragCoefficient = dragCoefficient || 0.1
         this.attractors = attractors || []
         this.resetCondition = resetCondition
+        this.bounds = bounds
         //replace with customforcefucntion
     }
 
@@ -91,7 +93,7 @@ export default class ParticlesInstance {
     handleCustomForcesSet(customForcesSet) {
         if (this.particles.length !== customForcesSet.length) {
             throw `There are ${customForcesSet.length} forces 
-            and ${this.particles.length}. Must be equal.`
+            and ${this.particles.length} particles. These must be equal.`
         }
     
         this.customForcesSet = customForcesSet
