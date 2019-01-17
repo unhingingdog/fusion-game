@@ -22,9 +22,7 @@ export const getAngularForce = (angleIncrease, centrePosition, particlePosition)
     const x = hyp * Math.cos(theta)
     const y = hyp * Math.sin(theta)
 
-    const next = new three.Vector3(x,y,0)
-
-    const result = particlePosition.sub(next)
+    const result = particlePosition.sub(new three.Vector3(x,y,0))
 
     return new three.Vector3(result.x, result.y, 0)
 }
