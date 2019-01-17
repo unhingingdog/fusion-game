@@ -4,8 +4,6 @@ import { getAngularForce } from './gameUtils'
 import { createScene, createMesh } from './graphicsSetup'
 
 export default canvas => {
-    const { scene, camera, renderer } = createScene({ canvas })
-
     const particleSystem = new ParticleSystem({ 
         dragCoefficient: 0.001
     })
@@ -18,24 +16,28 @@ export default canvas => {
 
     particleSystem.generateParticles({
         initialVelocity: [0, 0.1, 0.2],
-        particleCount: 1000,
+        particleCount: 10000,
         generatedInitalPositions: { origin: [15, 10, -20], spread: [2, 2, 2] }
     })
+
+    const { scene, camera, renderer } = createScene({ canvas })
 
     const particleMesh = createMesh({
         scene,
         particleLocations: particleSystem.getParticlePositions(),
         image: particleImage,
+        size: 2
     })
 
     const attractorMesh = createMesh({
         scene,
         particleLocations: particleSystem.getAttractorPositions(),
         color: 0x00ff00,
-        size: 6
+        size: 1
     })
 
-    const customForce = null //particle => getAngularForce(0.00001, false, particle.position)
+    let strength = 0.000001
+    const customForce = particle => getAngularForce(strength, false, particle.position)
 
     const render = () => {
         particleSystem.move(customForce)
@@ -47,4 +49,20 @@ export default canvas => {
         requestAnimationFrame(render)
     }
     requestAnimationFrame(render)
+
+    return {
+        addForce: () => {
+            strength = strength * 10
+            console.log(strength)
+        },
+        changeDragCoeffcient: change => {
+            particleSystem.changeDragCoeffcient(change)
+        },
+        changeAttractorMass: change => { 
+            particleSystem.changeAttractorsMass(change)
+        },
+        changeParticlesMass: change => { 
+            particleSystem.changeParticlesMass(change)
+        }
+    }
 }

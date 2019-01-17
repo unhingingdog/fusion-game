@@ -89,6 +89,14 @@ export default class ParticlesInstance {
     resetParticleOnConditions(particle) {
         if (this.particleResetCondition(particle)) particle.reset()
     }
+
+    changeDragCoeffcient(newCoefficient) {
+        this.dragCoefficient = newCoefficient
+    }
+
+    changeParticlesMass(newMass) {
+        this.particles.forEach(particle => particle.changeMass(newMass))
+    }
 }
 
 

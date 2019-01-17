@@ -45,6 +45,10 @@ export default class Particle {
         this.born = Date.now()
     }
 
+    changeMass(newMass) {
+        this.mass = newMass
+    }
+
     bounce() {
         const { bounds } = this
 

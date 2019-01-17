@@ -9,8 +9,11 @@ export default class Attractor extends Particle {
     attract(particle) {
         const distance = this.position.distanceTo(particle.position)
         const strength = (this.G * this.mass * particle.mass) / (distance * distance)
-        const force = this.position.clone().sub(particle.position).normalize().multiplyScalar(strength)
-        return force
+        return this.position
+            .clone()
+            .sub(particle.position)
+            .normalize()
+            .multiplyScalar(strength)
     }
 
     getDistanceTo(particle) {

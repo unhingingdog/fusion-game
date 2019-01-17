@@ -70,4 +70,18 @@ export default class ParticleSystem {
     getAttractorPositions() {
         return this.attractors.map(particle => particle.position)
     }
+
+    changeDragCoeffcient(newCoefficient) {
+        this.dragCoefficient = newCoefficient
+        this.particleBatches.forEach(batch => batch.changeDragCoeffcient(newCoefficient))
+        this.attractorBatches.forEach(batch => batch.changeDragCoeffcient(newCoefficient))
+    }
+
+    changeParticlesMass(newMass) {
+        this.particleBatches.forEach(batch => batch.changeParticlesMass(newMass))
+    }
+
+    changeAttractorsMass(newMass) {
+        this.attractorBatches.forEach(batch => batch.changeParticlesMass(newMass))
+    }
 }
