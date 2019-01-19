@@ -1,8 +1,6 @@
 import React, { useEffect } from 'react'
 import sceneManager from './three/sceneManager'
 
-const areEqual = () => true
-
 const Canvas = ({ width, height }) => {
     let canvas = React.createRef()
     let force = () => console.log('not working')
@@ -24,4 +22,4 @@ const Canvas = ({ width, height }) => {
     )
 }
 
-export default React.memo(Canvas, areEqual)
+export default React.memo(Canvas, true)

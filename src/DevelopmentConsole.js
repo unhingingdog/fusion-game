@@ -32,7 +32,7 @@ const DevelopmentConsole = () => (
             level={100}
             width={60}
             height={400} 
-            complete={() => alert('fuck')}
+            complete={() => alert('hi')}
             empty={() => {}}
             transitionDuration={100}
             incrementValue={50} 
