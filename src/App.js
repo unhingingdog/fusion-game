@@ -31,23 +31,20 @@ const App = () => {
 
   return (
     <div className="App" style={{ display: 'flex' }} onClick={() => {}}>
-      <button 
-        onClick={alterParticleSystemAttribute}
-        id={SET_DRAG_COEFFCIENT}
-        value={1}
-      >ch</button>
       <input 
         type="text"
         ref={input} 
         // onKeyPress={eventHandler}
         style={{ height: 0 }} 
       />
-      <DevelopmentConsole />
-      <ReactorWrapper 
+      <DevelopmentConsole
+        alterParticleSystemAttribute={alterParticleSystemAttribute}
+      />
+      {/* <ReactorWrapper 
         width="400" 
         height="400"
         passParticleControlsUp={setControls} 
-      />
+      /> */}
     </div>
   )
 }

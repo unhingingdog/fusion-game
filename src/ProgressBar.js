@@ -15,7 +15,8 @@ const BarPresentational = props => {
         border,
         color,
         transitionDuration,
-        onClickEvent
+        onClickEvent,
+        id
     } = props
 
     const styles = {
@@ -30,11 +31,11 @@ const BarPresentational = props => {
         },
         inner: {
             background: color,
-            width: level > (borderRadius * 1) ? width : width - borderRadius,
-            height: level,
+            width: level > (borderRadius / 3) ? width : width - borderRadius,
+            height: level * (height / 100),
             margin: margin,
             borderRadius: borderRadius - margin,
-            opacity: level > borderRadius ? 1 : 0,
+            opacity: level > (borderRadius / 3) ? 1 : 0,
             transitionProperty: 'height width opacity',
             transitionDuration: transitionDuration / 1000 + 's',
             transitionTimingFunction: 'linear'
@@ -45,6 +46,8 @@ const BarPresentational = props => {
         <div 
             style={styles.container} 
             onClick={onClickEvent ? eventHandler : () => {}}
+            level={level}
+            id={id}
         >
             <div style={styles.inner}></div>
         </div>
@@ -74,9 +77,9 @@ const ProgressBar = componentFromStream(prop$ => (
             return change$.pipe(
                 startWith(props.level),
                 scan((acc, change) => {
-                    const complete = acc >= props.height
+                    const complete = acc >= 100
                     const empty = acc <= 0 && change < 0
-                    change = change > (props.height - acc) ? props.height - acc : change
+                    change = change > (100 - acc) ? 100 - acc : change
                     
                     if (complete) props.complete()
                     if (empty) props.empty()
