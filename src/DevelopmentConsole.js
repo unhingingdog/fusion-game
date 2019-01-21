@@ -4,8 +4,6 @@ import { createEventHandler } from 'recompose'
 
 const { stream: click$, handler: eventHandler } = createEventHandler()
 
-const areEqual = () => true
-
 const DevelopmentConsole = () => (
     <>
         <div style={{ margin: 20, borderRadius: 15 }}>
@@ -32,7 +30,7 @@ const DevelopmentConsole = () => (
             level={100}
             width={60}
             height={400} 
-            complete={() => alert('hi')}
+            complete={() => {}}
             empty={() => {}}
             transitionDuration={100}
             incrementValue={50} 
@@ -42,4 +40,4 @@ const DevelopmentConsole = () => (
     </>
 )
 
-export default React.memo(DevelopmentConsole)
+export default React.memo(DevelopmentConsole, () => true)

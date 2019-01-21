@@ -1,24 +1,41 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useReducer } from 'react'
 import DevelopmentConsole from './DevelopmentConsole'
-import Canvas from './ReactorWrapper'
+import ReactorWrapper from './ReactorWrapper'
+import particleSystemReducer from './particleSystemReducer'
+import { SET_ATTRACTOR_MASS, SET_DRAG_COEFFCIENT } from './types'
 
 const App = () => {
-  
   const input = React.createRef()
 
-  const [ num, inc ] = useState(0)
+  const [ particleControls, setControls ] = useState({})
 
-  const context = React.createContext()
+  const initialParticleSystemState = {
+    dragCoeffcient: 0.1,
+    particleMass: 10,
+    attractorMass: 1
+  }
 
+  const [ particleSystemState, particleSystemDispatch ] = useReducer(
+    particleSystemReducer, 
+    initialParticleSystemState
+  )
 
   const focusOnInput = () => input.current.focus()
 
-  useEffect(() => {
-    focusOnInput()
-  })
+  const alterParticleSystemAttribute = ({ target }) => {
+    particleSystemDispatch({
+      type: target.id,
+      payload: [parseInt(target.value), particleControls[target.id]]
+    })
+  }
 
   return (
     <div className="App" style={{ display: 'flex' }} onClick={() => {}}>
+      <button 
+        onClick={alterParticleSystemAttribute}
+        id={SET_DRAG_COEFFCIENT}
+        value={1}
+      >ch</button>
       <input 
         type="text"
         ref={input} 
@@ -26,8 +43,11 @@ const App = () => {
         style={{ height: 0 }} 
       />
       <DevelopmentConsole />
-      <button onClick={() => inc(num + 1)}>{num}</button>
-      <Canvas width="400" height="400" />
+      <ReactorWrapper 
+        width="400" 
+        height="400"
+        passParticleControlsUp={setControls} 
+      />
     </div>
   )
 }
