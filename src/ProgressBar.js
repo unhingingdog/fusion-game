@@ -74,15 +74,15 @@ const ProgressBar = componentFromStream(prop$ => (
 
             if (props.increment$) {
                 streams.push(
-                props.increment$
-                    .pipe(
-                        map(inc => {
-                            if (props.incrementSideEffect && props.level <= 100) {
-                                props.incrementSideEffect()
-                            }
-                        }),
-                        mapTo(props.incrementValue)
-                    )
+                    props.increment$
+                        .pipe(
+                            map(inc => {
+                                if (props.incrementSideEffect && props.level <= 100) {
+                                    props.incrementSideEffect()
+                                }
+                            }),
+                            mapTo(props.incrementValue)
+                        )
                 )
             }
 
@@ -90,7 +90,6 @@ const ProgressBar = componentFromStream(prop$ => (
                 if (props.decrementSideEffect && props.level > 0) {
                     props.decrementSideEffect()
                 }
-
                 return true
             }
 
@@ -138,4 +137,4 @@ const ProgressBar = componentFromStream(prop$ => (
     )
 ))
 
-export default React.memo(ProgressBar)
+export default ProgressBar

@@ -1,19 +1,12 @@
 import React from 'react'
-import ProgressBar from './ProgressBar'
 import { createEventHandler } from 'recompose'
 
 const DevelopmentConsole = ({ 
+    render,
     particleSystemProperty,
     particleSystemDispatch,
     particleSystemPropertyControl,
-    style,
-    maxPropertyValue,
-    propertyIncrementAmount,
-    propertyDecrementAmount,
-    transitionDuration,
-    decayDuration,
     actionType,
-    zeroOnFull,
     incrementStream,
     decrementStream
 }) => {
@@ -33,28 +26,14 @@ const DevelopmentConsole = ({
         })
     }   
 
-    return(
-        <ProgressBar 
-            level={(100 / maxPropertyValue) * particleSystemProperty} 
-            height={style.height}
-            width={style.width}
-            margin={style.margin}
-            incrementSideEffect={() => dispatchHandler(propertyIncrementAmount)}
-            decrementSideEffect={() => dispatchHandler(-1 * propertyDecrementAmount)}
-            transitionDuration={transitionDuration}
-            incrementValue={(100 / maxPropertyValue) * propertyIncrementAmount}
-            decrementValue={(100 / maxPropertyValue) * propertyDecrementAmount}
-            decayDuration={decayDuration}
-            border={style.border}
-            borderRadius={style.borderRadius}
-            color={style.color}
-            increment$={increment$}
-            incrementEventHandler={incrementHandler}
-            decrement$={decrement$}
-            decrementEventHandler={decrementHandler}
-            zeroOnFull={zeroOnFull}
-        />
-    )
+    return(render({ 
+        dispatchHandler, 
+        increment$, 
+        incrementHandler, 
+        decrement$, 
+        decrementHandler, 
+        particleSystemProperty 
+    }))
 }
 
-export default React.memo(DevelopmentConsole)
+export default DevelopmentConsole
