@@ -1,5 +1,5 @@
 import React from 'react'
-import { componentFromStream, createEventHandler } from 'recompose'
+import { componentFromStream } from 'recompose'
 import { map, startWith, switchMap, mapTo, scan, tap } from 'rxjs/operators'
 import { merge, interval } from 'rxjs'
 import './observableConfig'
@@ -38,7 +38,7 @@ const BarPresentational = props => {
         inner: {
             background: color,
             width: level > (borderRadius / 3) ? width : width - borderRadius,
-            height: level * (height / 100),
+            height: level > 100 ? height : level * (height / 100),
             margin: margin,
             borderRadius: borderRadius - margin,
             opacity: level > (borderRadius / 3) ? 1 : 0,
@@ -70,15 +70,21 @@ const BarPresentational = props => {
 const ProgressBar = componentFromStream(prop$ => (
     prop$.pipe(
         switchMap(props => {
-            const mappedIncrement$ = props.increment$
-                .pipe(
-                    map(inc => {
-                        if (props.incrementSideEffect && props.level <= 100) {
-                            props.incrementSideEffect()
-                        }
-                    }),
-                    mapTo(props.incrementValue)
+            const streams = []
+
+            if (props.increment$) {
+                streams.push(
+                props.increment$
+                    .pipe(
+                        map(inc => {
+                            if (props.incrementSideEffect && props.level <= 100) {
+                                props.incrementSideEffect()
+                            }
+                        }),
+                        mapTo(props.incrementValue)
+                    )
                 )
+            }
 
             const callDecrementSideEffect = () => {
                 if (props.decrementSideEffect && props.level > 0) {
@@ -88,32 +94,39 @@ const ProgressBar = componentFromStream(prop$ => (
                 return true
             }
 
-            const mappedDecrement$ = props.decrement$
-                .pipe(
-                    map(dec => callDecrementSideEffect()),
-                    mapTo(-1 * props.decrementValue),
+            if (props.decrement$) {
+                streams.push(
+                    props.decrement$
+                        .pipe(
+                            map(dec => callDecrementSideEffect()),
+                            mapTo(-1 * props.decrementValue),
+                        )
                 )
+            }
 
-            const decayDuration = props.decayDuration || 100000000000000000
-
-            const decay$ = interval(decayDuration)
-                .pipe(
-                    map(dec => callDecrementSideEffect()),
-                    mapTo(props.level >= 0 ? (-1 * props.decrementValue) : 0)
+            if (props.decayDuration) {
+                streams.push(
+                    interval(props.decayDuration)
+                        .pipe(
+                            map(dec => callDecrementSideEffect()),
+                            mapTo(-1 * props.decrementValue)
+                        )
                 )
+            }
 
-            const change$ = merge(mappedDecrement$, mappedIncrement$, decay$)
-
-            return change$.pipe(
+            return merge(...streams).pipe(
                 startWith(props.level),
                 scan((acc, change) => {
                     const complete = acc >= 100
                     const empty = acc <= 0 && change < 0
                     change = change > (100 - acc) ? 100 - acc : change
-                    
+                    if (acc > 100) acc = 100
+
                     if (complete && props.completeSideEffect) props.completeSideEffect()
                     if (empty && props.emptySideEffect) props.emptySideEffect()
-                    return empty ? 0 : acc + (complete ? (-1 * acc) : change)
+
+                    return (props.zeroOnFull && empty) ? 0 : 
+                        acc + (complete ? (-1 * acc) : change)
                 }),
                 map(level => ({ 
                     ...props,
@@ -125,4 +138,4 @@ const ProgressBar = componentFromStream(prop$ => (
     )
 ))
 
-export default ProgressBar
+export default React.memo(ProgressBar)
