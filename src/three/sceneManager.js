@@ -5,7 +5,7 @@ import { createScene, createMesh } from './graphicsSetup'
 
 export default canvas => {
     const particleSystem = new ParticleSystem({ 
-        dragCoefficient: 0.001
+        dragCoefficient: 0.01
     })
 
     particleSystem.generateParticles({

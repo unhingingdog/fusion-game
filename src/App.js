@@ -11,7 +11,7 @@ const App = () => {
   const [ particleControls, setControls ] = useState({})
 
   const initialParticleSystemState = {
-    dragCoeffcient: 0.001,
+    dragCoeffcient: 0.01,
     particleMass: 1,
     attractorMass: 5
   }
@@ -20,6 +20,8 @@ const App = () => {
     particleSystemReducer, 
     initialParticleSystemState
   )
+
+  useEffect(() => console.log(particleSystemState))
 
   const focusOnInput = () => input.current.focus()
 
@@ -44,7 +46,7 @@ const App = () => {
             color: "linear-gradient(red, orange)"
           }}
           propertyIncrementAmount={1}
-          propertyDecrementAmount={1}
+          propertyDecrementAmount={0.1}
           maxPropertyValue={10}
           transitionDuration={1000}
           decayDuration={1000}
@@ -70,8 +72,6 @@ const App = () => {
           transitionDuration={200}
           decayDuration={1000}
           actionType={SET_DRAG_COEFFICIENT}
-          barIncrementAmount={10}
-          barIncrementAmount={10}
         />
       </div>
       <ReactorWrapper 

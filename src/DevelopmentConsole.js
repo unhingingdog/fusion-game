@@ -13,16 +13,10 @@ const DevelopmentConsole = ({
     transitionDuration,
     decayDuration,
     actionType,
-    barIncrementAmount,
-    barDecrementAmount,
     zeroOnFull,
     incrementStream,
     decrementStream
 }) => {
-    if (!barIncrementAmount) 
-        barIncrementAmount = (100 / maxPropertyValue) * propertyIncrementAmount
-    if (!barDecrementAmount)
-        barDecrementAmount = (100 / maxPropertyValue) * propertyDecrementAmount
 
     if (!incrementStream) incrementStream = createEventHandler()
     if (!decrementStream) decrementStream = createEventHandler()
@@ -41,15 +35,15 @@ const DevelopmentConsole = ({
 
     return(
         <ProgressBar 
-            level={particleSystemProperty * 10} 
+            level={(100 / maxPropertyValue) * particleSystemProperty} 
             height={style.height}
             width={style.width}
             margin={style.margin}
             incrementSideEffect={() => dispatchHandler(propertyIncrementAmount)}
             decrementSideEffect={() => dispatchHandler(-1 * propertyDecrementAmount)}
             transitionDuration={transitionDuration}
-            incrementValue={barIncrementAmount}
-            decrementValue={barDecrementAmount}
+            incrementValue={(100 / maxPropertyValue) * propertyIncrementAmount}
+            decrementValue={(100 / maxPropertyValue) * propertyDecrementAmount}
             decayDuration={decayDuration}
             border={style.border}
             borderRadius={style.borderRadius}
