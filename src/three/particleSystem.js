@@ -72,12 +72,14 @@ export default class ParticleSystem {
     }
 
     changeDragCoeffcient(newCoefficient) {
+        if (newCoefficient < 0) return
         this.dragCoefficient = newCoefficient
         this.particleBatches.forEach(batch => batch.changeDragCoeffcient(newCoefficient))
         this.attractorBatches.forEach(batch => batch.changeDragCoeffcient(newCoefficient))
     }
 
     changeParticlesMass(newMass) {
+        if (newMass <= 0) return
         this.particleBatches.forEach(batch => batch.changeParticlesMass(newMass))
     }
 

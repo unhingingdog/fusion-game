@@ -1,13 +1,14 @@
 import React from 'react'
 import { componentFromStream, createEventHandler } from 'recompose'
-import { map, startWith, switchMap, mapTo, scan } from 'rxjs/operators'
+import { map, startWith, switchMap, mapTo, scan, tap } from 'rxjs/operators'
 import { merge, interval } from 'rxjs'
 import './observableConfig'
 
 const BarPresentational = props => {
-    const { 
+    let { 
         level, 
-        eventHandler,
+        incrementEventHandler,
+        decrementEventHandler,
         margin, 
         height, 
         width,
@@ -15,9 +16,14 @@ const BarPresentational = props => {
         border,
         color,
         transitionDuration,
-        onClickEvent,
         id
     } = props
+
+    width = width || 30
+    margin = margin || 5
+    border = border || "1px solid grey"
+    borderRadius = borderRadius || 15
+    color = color || "linear-gradient(blue, purple)"
 
     const styles = {
         container: {
@@ -45,11 +51,18 @@ const BarPresentational = props => {
     return(
         <div 
             style={styles.container} 
-            onClick={onClickEvent ? eventHandler : () => {}}
+            onClick={incrementEventHandler ? incrementEventHandler : () => {}}
             level={level}
             id={id}
         >
-            <div style={styles.inner}></div>
+            <div 
+                style={styles.inner} 
+                onClick={e => { 
+                    e.stopPropagation()
+                    if (decrementEventHandler) decrementEventHandler()
+                }}
+            >
+            </div>
         </div>
     )
 }
@@ -57,22 +70,39 @@ const BarPresentational = props => {
 const ProgressBar = componentFromStream(prop$ => (
     prop$.pipe(
         switchMap(props => {
-            let click$
-            let eventHandler
+            const mappedIncrement$ = props.increment$
+                .pipe(
+                    map(inc => {
+                        if (props.incrementSideEffect && props.level <= 100) {
+                            props.incrementSideEffect()
+                        }
+                    }),
+                    mapTo(props.incrementValue)
+                )
 
-            if(!props.eventStream) {
-                const { stream, handler } = createEventHandler()
-                click$ = stream
-                eventHandler = handler
-            } else {
-                click$ = props.eventStream
-                eventHandler = props.eventHandler
+            const callDecrementSideEffect = () => {
+                if (props.decrementSideEffect && props.level > 0) {
+                    props.decrementSideEffect()
+                }
+
+                return true
             }
 
-            const increase$ = click$.pipe(mapTo(props.incrementValue))
-            const decrease$ = interval(props.transitionDuration)
-                .pipe(mapTo(-1 * props.decrementValue))
-            const change$ = merge(increase$, decrease$)
+            const mappedDecrement$ = props.decrement$
+                .pipe(
+                    map(dec => callDecrementSideEffect()),
+                    mapTo(-1 * props.decrementValue),
+                )
+
+            const decayDuration = props.decayDuration || 100000000000000000
+
+            const decay$ = interval(decayDuration)
+                .pipe(
+                    map(dec => callDecrementSideEffect()),
+                    mapTo(props.level >= 0 ? (-1 * props.decrementValue) : 0)
+                )
+
+            const change$ = merge(mappedDecrement$, mappedIncrement$, decay$)
 
             return change$.pipe(
                 startWith(props.level),
@@ -81,22 +111,13 @@ const ProgressBar = componentFromStream(prop$ => (
                     const empty = acc <= 0 && change < 0
                     change = change > (100 - acc) ? 100 - acc : change
                     
-                    if (complete) props.complete()
-                    if (empty) props.empty()
+                    if (complete && props.completeSideEffect) props.completeSideEffect()
+                    if (empty && props.emptySideEffect) props.emptySideEffect()
                     return empty ? 0 : acc + (complete ? (-1 * acc) : change)
                 }),
                 map(level => ({ 
-                    level,
-                    color: props.color || "linear-gradient(blue, purple)",
-                    eventHandler,
-                    eventStream: click$,
-                    onClickEvent: props.onClickEvent || true,
-                    margin: props.margin || 5, 
-                    height: props.height,
-                    width: props.width || 30,
-                    borderRadius: props.borderRadius || (props.width ? props.width / 2 : 15),
-                    border: props.border || "1px solid grey",
-                    transitionDuration: props.transitionDuration
+                    ...props,
+                    level
                 })),
                 map(BarPresentational)
             )

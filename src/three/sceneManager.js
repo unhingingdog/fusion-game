@@ -11,13 +11,14 @@ export default canvas => {
     particleSystem.generateParticles({
         positionsSet: [[0,0,0]],
         isAttractor: true,
-        mass: 50
+        mass: 5
     })
 
     particleSystem.generateParticles({
         initialVelocity: [0, 0.1, 0.2],
-        particleCount: 20000,
-        generatedInitalPositions: { origin: [15, 10, -20], spread: [2, 2, 2] }
+        particleCount: 5000,
+        generatedInitalPositions: { origin: [15, 10, -20], spread: [2, 2, 2] },
+        mass: 1
     })
 
     const { scene, camera, renderer } = createScene({ canvas })
@@ -36,9 +37,6 @@ export default canvas => {
         size: 1
     })
 
-    // let strength = 0.000001
-    // const customForce = particle => getAngularForce(strength, false, particle.position)
-
     const render = () => {
         particleSystem.move()
 
@@ -52,11 +50,7 @@ export default canvas => {
     requestAnimationFrame(render)
 
     return {
-        // ADD_FORCE: () => {
-        //     strength = strength * 10
-        //     console.log(strength)
-        // },
-        SET_DRAG_COEFFCIENT: change => {
+        SET_DRAG_COEFFICIENT: change => {
             particleSystem.changeDragCoeffcient(change)
         },
         SET_ATTRACTOR_MASS: change => { 
