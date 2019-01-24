@@ -27,7 +27,7 @@ export default (state, action) => {
     case SET_DRAG_COEFFICIENT:
       return {
         ...state, 
-        dragCoeffcient: newValue 
+        dragCoefficient: newValue 
       }
     default:
       return state

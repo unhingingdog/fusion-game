@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useReducer } from 'react'
-import DevelopmentConsole from './DevelopmentConsole'
-import ProgressBar from './ProgressBar'
+import ParticleSystemControls from './ParticleSystemControls'
 import ReactorWrapper from './ReactorWrapper'
 import particleSystemReducer from './particleSystemReducer'
 import { createEventHandler } from 'recompose'
@@ -12,7 +11,7 @@ const App = () => {
   const [ particleControls, setControls ] = useState({})
 
   const initialParticleSystemState = {
-    dragCoeffcient: 0.01,
+    dragCoefficient: 0.005,
     particleMass: 1,
     attractorMass: 5
   }
@@ -21,8 +20,6 @@ const App = () => {
     particleSystemReducer, 
     initialParticleSystemState
   )
-
-  useEffect(() => console.log(particleSystemState))
 
   const focusOnInput = () => input.current.focus()
 
@@ -33,64 +30,11 @@ const App = () => {
         ref={input} 
         style={{ height: 0 }} 
       />
-      <div style={{ margin: 20 }}>
-        {/* <DevelopmentConsole
-          particleSystemProperty={particleSystemState.attractorMass}
-          particleSystemDispatch={particleSystemDispatch}
-          particleSystemPropertyControl={particleControls.SET_ATTRACTOR_MASS}
-          style={{
-            height: 400,
-            width: 30,
-            margin: 5,
-            border: "1px solid grey",
-            borderRadius: 15,
-            color: "linear-gradient(red, orange)"
-          }}
-          propertyIncrementAmount={1}
-          propertyDecrementAmount={0.1}
-          maxPropertyValue={10}
-          transitionDuration={1000}
-          decayDuration={1000}
-          actionType={SET_ATTRACTOR_MASS}
-        /> */}
-
-        <DevelopmentConsole 
-          particleSystemProperty={particleSystemState.attractorMass}
-          particleSystemDispatch={particleSystemDispatch}
-          particleSystemPropertyControl={particleControls.SET_ATTRACTOR_MASS}
-          actionType={SET_ATTRACTOR_MASS}
-          render={
-            ({
-              particleSystemProperty,
-              dispatchHandler,
-              increment$,
-              incrementHandler,
-              decrement$,
-              decrementHandler
-            }) => (
-              <ProgressBar
-                level={(100 / 10) * particleSystemProperty} 
-                height={400}
-                width={30}
-                margin={5}
-                incrementSideEffect={() => dispatchHandler(1)}
-                decrementSideEffect={() => dispatchHandler(-1)}
-                transitionDuration={1000}
-                incrementValue={(100 / 10) * 1}
-                decrementValue={(100 / 10) * 1}
-                decayDuration={1000}
-                border="1px solid grey"
-                borderRadius={15}
-                color="linear-gradient(red, orange)"
-                increment$={increment$}
-                incrementEventHandler={incrementHandler}
-                decrement$={decrement$}
-                decrementEventHandler={decrementHandler}
-              />
-            )
-          } 
-        />
-      </div>
+      <ParticleSystemControls
+        particleSystemDispatch={particleSystemDispatch}
+        particleSystemState={particleSystemState}
+        particleControls={particleControls}
+      />
       <ReactorWrapper 
         width="400" 
         height="400"
