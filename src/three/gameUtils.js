@@ -12,10 +12,13 @@ export const plotCircle = (x0, y0, radius, n) => {
     return points
 }
 
-export const getAngularForce = (angleIncrease, centrePosition, particlePosition) => {
+export const getAngularForce = (angleIncrease, particlePosition, centrePosition) => {
     centrePosition = centrePosition || new three.Vector2(0.000001, 0.000001, 0.000001)
-    particlePosition = new three.Vector2(particlePosition.x, particlePosition.y)
 
+    particlePosition = particlePosition.x ? 
+        new three.Vector2(particlePosition.x, particlePosition.y) :
+        new three.Vector2(particlePosition[0], particlePosition[1])
+    
     const theta = particlePosition.angle(centrePosition) + angleIncrease
     const hyp = particlePosition.distanceTo(centrePosition)
 

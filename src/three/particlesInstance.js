@@ -86,10 +86,6 @@ export default class ParticlesInstance {
         return drag.multiplyScalar(dragMagnitude)
     }
 
-    resetParticleOnConditions(particle) {
-        if (this.particleResetCondition(particle)) particle.reset()
-    }
-
     changeDragCoeffcient(newCoefficient) {
         this.dragCoefficient = newCoefficient
     }

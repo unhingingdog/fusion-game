@@ -1,6 +1,6 @@
 import particleImage from './particle.png'
 import ParticleSystem from './particleSystem'
-import { getAngularForce } from './gameUtils'
+import { getAngularForce, plotCircle } from './gameUtils'
 import { createScene, createMesh } from './graphicsSetup'
 
 export default canvas => {
@@ -14,12 +14,22 @@ export default canvas => {
         mass: 5
     })
 
-    particleSystem.generateParticles({
-        initialVelocity: [0, 0.1, 0.2],
-        particleCount: 5000,
-        generatedInitalPositions: { origin: [15, 10, -20], spread: [2, 2, 2] },
-        mass: 1
-    })
+    const initialLocations = plotCircle(0, 0, 30, 100)
+    const initialVelocities = initialLocations.map(point => (
+        getAngularForce(0.005, point)
+    ))
+
+    console.log(initialLocations)
+    console.log(initialVelocities[0])
+    
+    initialLocations.map((location, index) => (
+        particleSystem.generateParticles({
+            initialVelocity: [initialVelocities[index].x,initialVelocities[index].y, initialVelocities[index].z],
+            particleCount: 100,
+            generatedInitalPositions: { origin: location, spread: [2, 2, 2] },
+            mass: 1,
+        })
+    ))
 
     const { scene, camera, renderer } = createScene({ canvas })
 
@@ -36,6 +46,8 @@ export default canvas => {
         color: 0x00ff00,
         size: 1
     })
+
+
 
     const render = () => {
         particleSystem.move()

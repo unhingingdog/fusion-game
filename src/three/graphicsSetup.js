@@ -39,8 +39,6 @@ export const createMesh = ({
     size = size || 1
     offset = offset || -200
 
-    // const particleApperance = image ? { map: new three.TextureLoader().load(image) } :
-    //     { size, color }
 
     const geometry = new three.Geometry()
     geometry.vertices = particleLocations
