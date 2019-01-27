@@ -11,7 +11,10 @@ const ParticleSystemControls = ({
 
 	return (
 		<>
-			<div style={{ margin: 20 }}>
+			<h2 style={{ transform: 'rotate(270deg)', height: 150 }}>Field Strength</h2>
+			<div style={{ 
+				margin: 20
+			}}>
 				<ParticleSystemPropertyController 
 				particleSystemProperty={particleSystemState.attractorMass}
 				particleSystemDispatch={particleSystemDispatch}
@@ -48,6 +51,7 @@ const ParticleSystemControls = ({
 					)
 				} 
 			/>
+			<h2>{particleSystemState.attractorMass}</h2>
 		</div>
 		<div style={{ margin: 20 }}>
 			<ParticleSystemPropertyController 
@@ -65,16 +69,16 @@ const ParticleSystemControls = ({
 						decrementHandler
 						}) => (
 							<ProgressBar
-								level={(100 / 0.01) * particleSystemProperty} 
+								level={(100 / 0.001) * particleSystemProperty} 
 								height={400}
 								width={30}
 								margin={5}
-								incrementSideEffect={() => dispatchHandler(0.001)}
-								decrementSideEffect={() => dispatchHandler(-0.001)}
-								transitionDuration={1000}
-								incrementValue={100 / 10}
+								incrementSideEffect={() => dispatchHandler(0.0001)}
+								decrementSideEffect={() => dispatchHandler(-0.0001)}
+								transitionDuration={1200}
+								incrementValue={100 / 100}
 								decrementValue={100 / 100}
-								// decayDuration={1000}
+								decayDuration={1200}
 								border="1px solid grey"
 								borderRadius={15}
 								color="linear-gradient(aqua, blue)"
@@ -86,6 +90,8 @@ const ParticleSystemControls = ({
 						)
 					} 
 				/>
+				<p>resistance</p>
+				<h2>{particleSystemState.dragCoefficient}</h2>
 			</div>
 		</>
 	)

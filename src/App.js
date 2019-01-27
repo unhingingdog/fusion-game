@@ -2,26 +2,21 @@ import React, { useState, useEffect, useReducer } from 'react'
 import ParticleSystemControls from './ParticleSystemControls'
 import ReactorWrapper from './ReactorWrapper'
 import particleSystemReducer from './particleSystemReducer'
-import { createEventHandler } from 'recompose'
-import { SET_ATTRACTOR_MASS, SET_DRAG_COEFFICIENT } from './types'
+import initialParticleSystemState from './initialState'
 
 const App = () => {
   const input = React.createRef()
 
   const [ particleControls, setControls ] = useState({})
 
-  const initialParticleSystemState = {
-    dragCoefficient: 0.005,
-    particleMass: 1,
-    attractorMass: 5
-  }
-
   const [ particleSystemState, particleSystemDispatch ] = useReducer(
     particleSystemReducer, 
     initialParticleSystemState
-  )
+  )  
 
   const focusOnInput = () => input.current.focus()
+
+  console.log(window.innerHeight)
 
   return (
     <div className="App" style={{ display: 'flex' }} onClick={() => {}}>
@@ -36,8 +31,8 @@ const App = () => {
         particleControls={particleControls}
       />
       <ReactorWrapper 
-        width="400" 
-        height="400"
+        width={window.innerHeight / 2} 
+        height={window.innerHeight / 2}
         passParticleControlsUp={setControls} 
       />
     </div>

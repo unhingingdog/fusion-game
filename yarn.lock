@@ -8151,6 +8151,16 @@ three@^0.100.0:
   version "0.100.0"
   resolved "https://registry.yarnpkg.com/three/-/three-0.100.0.tgz#262841c0b7d88ebd62af73f28d9f578963b3aa00"
 
+three@^0.95.0:
+  version "0.95.0"
+  resolved "https://registry.yarnpkg.com/three/-/three-0.95.0.tgz#b60ea076ba17df9faba9e855b86ab3f541289abf"
+
+threejs-orbit-controls@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/threejs-orbit-controls/-/threejs-orbit-controls-1.0.3.tgz#55c7102998cc0dc51cf1c2740d1791e484b9e556"
+  dependencies:
+    three "^0.95.0"
+
 throat@^4.0.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/throat/-/throat-4.1.0.tgz#89037cbc92c56ab18926e6ba4cbb200e15672a6a"

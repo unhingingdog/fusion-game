@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { createEventHandler } from 'recompose'
 
 const areEqual = (prevProps, nextProps) => {
@@ -46,7 +46,7 @@ const ParticleSystemPropertyController = ({
         decrement$, 
         decrementHandler, 
         particleSystemProperty 
-    }) : <div></div>)
+    }) : <div />)
 }
 
 export default React.memo(ParticleSystemPropertyController, areEqual)

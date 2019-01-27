@@ -5,7 +5,7 @@ export const createScene = ({ canvas, color, cameraSettings, lights }) => {
     cameraSettings = cameraSettings || [35, canvas.width / canvas.height, 0.1, 3000]
     lights = lights || [['0xffffff', 0.5]]
 
-    const renderer = new three.WebGLRenderer({ canvas, antialias: true })
+    const renderer = new three.WebGLRenderer({ canvas })
     renderer.setClearColor(color)
     renderer.setPixelRatio(window.devicePixelRatio)
     renderer.setSize(canvas.width, canvas.height)
@@ -37,7 +37,10 @@ export const createMesh = ({
     }
     color = color || '0xffffff'
     size = size || 1
-    offset = offset || -200
+    let [xOffset, yOffset, zOffset] = offset
+    zOffset = zOffset || -200
+    yOffset = yOffset || 0
+    xOffset = xOffset || 0
 
 
     const geometry = new three.Geometry()
@@ -49,11 +52,15 @@ export const createMesh = ({
             ...materialSettings, 
             map: image ? new three.TextureLoader().load(image) : null,
             size, 
-            color 
+            color,
+            // alphaTest: 0.5
+            depthTest: true 
         })
     )
 
-    mesh.position.z = offset
+    // mesh.position.z = zOffset
+    // mesh.position.x = xOffset
+    // mesh.position.y = yOffset
     scene.add(mesh)
 
     return mesh
