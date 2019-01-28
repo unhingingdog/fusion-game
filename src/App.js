@@ -14,7 +14,7 @@ const App = () => {
   )  
 
   return (
-    <div className="App" style={{ display: 'flex' }} onClick={() => {}}>
+    <div className="App" style={{ display: 'flex' }}>
       <ParticleSystemControls
         particleSystemDispatch={particleSystemDispatch}
         particleSystemState={particleSystemState}

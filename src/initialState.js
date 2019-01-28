@@ -5,7 +5,7 @@ export default {
     angularMomentum: 0.0115,
     radius: 20,
     particleClusterDistribution: 1000,
-    particleCount: 20000,
+    particleCount: 8000,
     clusterSpread: [2, 2, 2],
     running: false
 }

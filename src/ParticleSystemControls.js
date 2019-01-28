@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import ProgressBar from './ProgressBar'
 import ParticleSystemPropertyController from './ParticleSystemPropertyController'
 import { 
@@ -13,13 +13,12 @@ const ParticleSystemControls = ({
 	particleSystemState,
 	particleControls 
 }) => {
-
 	const toggleSystem = () => {
 		if (!particleSystemState.running) {
 			particleSystemDispatch({
 				type: START_SYSTEM,
 				payload: [
-					, 
+					null, 
 					particleControls.START_SYSTEM
 				]
 			})
@@ -47,7 +46,6 @@ const ParticleSystemControls = ({
 
 	useEffect(() => {
 		//Initial adjustment keeps particles in bounds
-		console.log(particleSystemState.running)
 
 		if (particleControls.SET_ATTRACTOR_MASS && particleSystemState.running) {
 			particleSystemDispatch({
@@ -107,6 +105,7 @@ const ParticleSystemControls = ({
 		<div style={{ margin: 20 }}>
 			<ParticleSystemPropertyController 
 					particleSystemProperty={particleSystemState.dragCoefficient}
+					running={particleSystemState.running}
 					particleSystemDispatch={particleSystemDispatch}
 					particleSystemPropertyControl={particleControls.SET_DRAG_COEFFICIENT}
 					actionType={SET_DRAG_COEFFICIENT}
@@ -129,7 +128,7 @@ const ParticleSystemControls = ({
 								transitionDuration={1200}
 								incrementValue={100}
 								decrementValue={100}
-								decayDuration={particleSystemState.running ? 1200 : 1000000}
+								decayDuration={particleSystemState.running ? 1200 : 0}
 								border="1px solid grey"
 								borderRadius={15}
 								color="linear-gradient(aqua, blue)"

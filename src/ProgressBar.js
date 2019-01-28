@@ -104,6 +104,7 @@ const ProgressBar = componentFromStream(prop$ => (
             }
 
             if (props.decayDuration) {
+                console.log(true)
                 streams.push(
                     interval(props.decayDuration)
                         .pipe(
