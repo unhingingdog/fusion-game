@@ -18,7 +18,9 @@ export default class ParticleSystem {
         positionsSet,
         isAttractor,
         attractors,
-        resetCondition
+        resetCondition,
+        resetPosition,
+        resetVelocity
     }) {
 
         const particleBatch = new ParticlesInstance({
@@ -31,7 +33,9 @@ export default class ParticleSystem {
             dragCoefficient: this.dragCoefficient,
             bounds: this.bounds,
             attractors: attractors || this.attractors,
-            resetCondition
+            resetCondition,
+            resetPosition,
+            resetVelocity
         })      
 
         if (isAttractor) {

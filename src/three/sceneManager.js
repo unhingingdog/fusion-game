@@ -14,11 +14,12 @@ const {
     radius,
     particleCount,
     particleClusterDistribution,
-    clusterSpread 
+    clusterSpread
 } = initialState
 
 export default canvas => {
     const particleSystem = new ParticleSystem({ dragCoefficient })
+    const centre = new three.Vector3(0.0001, 0.0001, 0.0001)
 
     particleSystem.generateParticles({
         positionsSet: [[0,0,0]],
@@ -42,6 +43,13 @@ export default canvas => {
                 particleCount: Math.floor(particleCount / particleClusterDistribution),
                 generatedInitalPositions: { origin: location, spread: clusterSpread },
                 mass: particleMass,
+                resetCondition: particle => {
+                    const distance = particle.position.distanceTo(centre)
+                    if (distance < 3.2 || distance > 22) return true
+                    return false
+                },
+                resetPosition: [500, 500, 500],
+                resetVelocity: [0, 0, 0]
             })
         ))
     }

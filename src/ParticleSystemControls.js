@@ -39,7 +39,7 @@ const ParticleSystemControls = ({
 						particleControls.STOP_SYSTEM
 					]
 				})
-			}, 3000)
+			}, 1000)
 		}
 
 	}

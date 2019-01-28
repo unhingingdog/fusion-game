@@ -12,6 +12,8 @@ export default class ParticlesInstance {
         dragCoefficient,
         attractors,
         resetCondition,
+        resetPosition,
+        resetVelocity,
         bounds
     }) {
         this.count = count
@@ -41,6 +43,8 @@ export default class ParticlesInstance {
         this.dragCoefficient = dragCoefficient || 0.1
         this.attractors = attractors || []
         this.resetCondition = resetCondition
+        this.resetPosition = resetPosition
+        this.resetVelocity = resetVelocity
         this.bounds = bounds
     }
 
@@ -77,7 +81,8 @@ export default class ParticlesInstance {
     }
 
     resetParticleOnConditions(particle) {
-        if (this.resetCondition(particle)) particle.reset()
+        if (this.resetCondition(particle)) 
+            particle.reset(this.resetPosition, this.resetVelocity)
     }
 
     generateDrag(particle) {

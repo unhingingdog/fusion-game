@@ -39,8 +39,11 @@ export default class Particle {
     }
 
     reset(resetPosition, resetVelocity) {
-        this.position.set(...this.initialPosition)
-        this.velocity.set(...this.initialVelocity)
+        resetPosition = resetPosition || this.initialPosition
+        resetVelocity = resetVelocity || this.initialVelocity
+
+        this.position.set(...resetPosition)
+        this.velocity.set(...resetVelocity)
         this.acceleration.set(0, 0, 0)
         this.born = Date.now()
     }
