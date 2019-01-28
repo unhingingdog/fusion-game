@@ -73,6 +73,11 @@ export default class ParticleSystem {
         return this.attractors.map(particle => particle.position)
     }
 
+    removeAllParticles() {
+        this.particles = []
+        this.particleBatches = []
+    }
+
     changeDragCoeffcient(newCoefficient) {
         if (newCoefficient < 0) return
         this.dragCoefficient = newCoefficient

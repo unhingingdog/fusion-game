@@ -5,7 +5,6 @@ import particleSystemReducer from './particleSystemReducer'
 import initialParticleSystemState from './initialState'
 
 const App = () => {
-  const input = React.createRef()
 
   const [ particleControls, setControls ] = useState({})
 
@@ -14,17 +13,8 @@ const App = () => {
     initialParticleSystemState
   )  
 
-  const focusOnInput = () => input.current.focus()
-
-  console.log(window.innerHeight)
-
   return (
     <div className="App" style={{ display: 'flex' }} onClick={() => {}}>
-      <input 
-        type="text"
-        ref={input} 
-        style={{ height: 0 }} 
-      />
       <ParticleSystemControls
         particleSystemDispatch={particleSystemDispatch}
         particleSystemState={particleSystemState}

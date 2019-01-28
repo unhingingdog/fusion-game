@@ -53,14 +53,10 @@ export const createMesh = ({
             map: image ? new three.TextureLoader().load(image) : null,
             size, 
             color,
-            // alphaTest: 0.5
             depthTest: true 
         })
     )
 
-    // mesh.position.z = zOffset
-    // mesh.position.x = xOffset
-    // mesh.position.y = yOffset
     scene.add(mesh)
 
     return mesh

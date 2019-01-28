@@ -26,23 +26,25 @@ export default canvas => {
         mass: attractorMass
     })
 
-    const initialLocations = plotCircle(0, 0, radius, particleClusterDistribution )
-    const initialVelocities = initialLocations.map(point => (
-        getAngularForce(angularMomentum, point)
-    ))
-    
-    initialLocations.map((location, index) => (
-        particleSystem.generateParticles({
-            initialVelocity: [
-                initialVelocities[index].x,
-                initialVelocities[index].y, 
-                initialVelocities[index].z
-            ],
-            particleCount: Math.floor(particleCount / particleClusterDistribution),
-            generatedInitalPositions: { origin: location, spread: clusterSpread },
-            mass: particleMass,
-        })
-    ))
+    const generateParticles = () => {
+        const initialLocations = plotCircle(0, 0, radius, particleClusterDistribution )
+        const initialVelocities = initialLocations.map(point => (
+            getAngularForce(angularMomentum, point)
+        ))
+        
+        initialLocations.map((location, index) => (
+            particleSystem.generateParticles({
+                initialVelocity: [
+                    initialVelocities[index].x,
+                    initialVelocities[index].y, 
+                    initialVelocities[index].z
+                ],
+                particleCount: Math.floor(particleCount / particleClusterDistribution),
+                generatedInitalPositions: { origin: location, spread: clusterSpread },
+                mass: particleMass,
+            })
+        ))
+    }
 
     const { scene, camera, renderer } = createScene({ canvas })
 
@@ -51,7 +53,7 @@ export default canvas => {
     const controls = new OrbitControls(camera, canvas)
     controls.maxPolarAngle = 2.8
     controls.minPolarAngle = 1.5
-    controls.maxAzimuthAngle = 0.4
+    controls.maxAzimuthAngle = 0
     controls.minAzimuthAngle = 0
     controls.maxZoom = 100
     controls.panSpeed = 2
@@ -60,26 +62,10 @@ export default canvas => {
 
     var spotLight = new three.SpotLight(0xffffff);
     spotLight.position.set(-200, 400, 300);
-    scene.add(spotLight)    
+    scene.add(spotLight)  
 
-    const particleMesh = createMesh({
-        scene,
-        particleLocations: particleSystem.getParticlePositions(),
-        image: particleImage,
-        size: 0.7,
-        offset: [0, 0, -150]
-    })
-
-    const attractorMesh = createMesh({
-        scene,
-        particleLocations: particleSystem.getAttractorPositions(),
-        color: 'black',
-        size: 0,
-        offset: [0, 0, -150]
-    })
-
-    const torusShellGeometry = new three.TorusGeometry(15, 11, 20, 30, 4)
-    const torusInnerGeometry = new three.TorusGeometry(15, 10.5, 20, 30, 4)
+    const torusShellGeometry = new three.TorusGeometry(12.5, 11, 20, 30, 4)
+    const torusInnerGeometry = new three.TorusGeometry(12.5, 10.5, 20, 30, 4)
 
     const torusShellMaterial = new three.MeshPhongMaterial({ 
         color: 'grey',
@@ -91,16 +77,44 @@ export default canvas => {
         map: new three.ImageUtils.loadTexture(metal),
         wireframeLinewidth: 20
     })
+    
+    createMesh({
+        scene,
+        particleLocations: particleSystem.getAttractorPositions(),
+        color: 'black',
+        size: 0,
+        offset: [0, 0, -150]
+    })
+
+    let particleMesh
+
+    const toggleSystem = (running) => {
+        if (running) {
+            generateParticles()
+
+            particleMesh = createMesh({
+                scene,
+                particleLocations: particleSystem.getParticlePositions(),
+                image: particleImage,
+                size: 0.7,
+                offset: [0, 0, -150]
+            })
+        } else {
+            scene.remove(particleMesh)
+            particleSystem.removeAllParticles()
+            particleMesh = null
+        }
+    }
 
     scene.add(new three.Mesh(torusShellGeometry, torusShellMaterial))
     scene.add(new three.Mesh(torusInnerGeometry, torusInnerMaterial))
 
     const render = () => {
-        particleSystem.move()
+        if (particleMesh) { 
+            particleSystem.move()
+            particleMesh.geometry.verticesNeedUpdate = true 
+        }
 
-        particleMesh.geometry.verticesNeedUpdate = true
-        attractorMesh.verticesNeedUpdate = true
-        
         renderer.render(scene, camera)
         requestAnimationFrame(render)
     }
@@ -116,6 +130,8 @@ export default canvas => {
         },
         SET_PARTICLE_MASS: change => { 
             particleSystem.changeParticlesMass(change)
-        }
+        },
+        START_SYSTEM: toggleSystem.bind(null, true),
+        STOP_SYSTEM: toggleSystem.bind(null, false)
     }
 }

@@ -1,7 +1,10 @@
+import initialState from './initialState'
 import {
     SET_PARTICLE_MASS,
     SET_ATTRACTOR_MASS,
-    SET_DRAG_COEFFICIENT
+    SET_DRAG_COEFFICIENT,
+    START_SYSTEM,
+    STOP_SYSTEM
   } from './types'
 
 const minMass = 0.0000001
@@ -14,6 +17,18 @@ export default (state, action) => {
   particleSystemFunction(newValue)
 
   switch(action.type) {
+    case START_SYSTEM:
+      return {
+        ...state,
+        running: true
+      }
+    case STOP_SYSTEM:
+      return {
+        ...state,
+        attractorMass: initialState.attractorMass,
+        dragCoefficient: initialState.dragCoefficient,
+        running: false
+      }
     case SET_PARTICLE_MASS: 
       return {
         ...state, 
