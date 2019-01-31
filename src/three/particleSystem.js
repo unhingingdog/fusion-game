@@ -77,6 +77,16 @@ export default class ParticleSystem {
         return this.attractors.map(particle => particle.position)
     }
 
+    getResetCounts() {
+        if (this.particleBatches.length) {
+            return this.particleBatches.reduce((acc, batch) => (
+                acc + batch.multiGenerationParticles
+                    .reduce((acc, particle) => acc + particle, 0)
+            ), 0)
+        }
+        return 0
+    }
+
     removeAllParticles() {
         this.particles = []
         this.particleBatches = []

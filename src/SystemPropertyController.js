@@ -39,14 +39,14 @@ const ParticleSystemPropertyController = ({
         })
     }  
 
-    return(particleSystemPropertyControl ? render({ 
+    return(render({ 
         dispatchHandler, 
         increment$, 
         incrementHandler, 
         decrement$, 
         decrementHandler, 
         particleSystemProperty 
-    }) : <div />)
+    }))
 }
 
 export default React.memo(ParticleSystemPropertyController, areEqual)

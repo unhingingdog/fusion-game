@@ -54,10 +54,18 @@ export default canvas => {
         ))
     }
 
-    const { scene, camera, renderer } = createScene({ canvas })
+    var spotLight = new three.SpotLight(0xffffff)
+    spotLight.position.set(-200, 400, 300)
 
-    camera.position.set( 0, 0, 100 )
-    camera.lookAt(new three.Vector3())
+    const { scene, camera, renderer } = createScene({ 
+        canvas,
+        lights: [
+            new three.AmbientLight('0xffffff', 0.5),
+            spotLight
+        ]
+    })
+
+    camera.position.set( 0, -85, 35 )
     const controls = new OrbitControls(camera, canvas)
     controls.maxPolarAngle = 2.8
     controls.minPolarAngle = 1.5
@@ -65,12 +73,8 @@ export default canvas => {
     controls.minAzimuthAngle = 0
     controls.maxZoom = 100
     controls.panSpeed = 2
-    controls.minDistance = 100
-    controls.maxDistance = 200
-
-    var spotLight = new three.SpotLight(0xffffff);
-    spotLight.position.set(-200, 400, 300);
-    scene.add(spotLight)  
+    controls.minDistance = 85
+    controls.maxDistance = /Mobi|Android/i.test(navigator.userAgent) ? 85 : 200
 
     const torusShellGeometry = new three.TorusGeometry(12.5, 11, 20, 30, 4)
     const torusInnerGeometry = new three.TorusGeometry(12.5, 10.5, 20, 30, 4)
@@ -91,7 +95,6 @@ export default canvas => {
         particleLocations: particleSystem.getAttractorPositions(),
         color: 'black',
         size: 0,
-        offset: [0, 0, -150]
     })
 
     let particleMesh
@@ -104,8 +107,7 @@ export default canvas => {
                 scene,
                 particleLocations: particleSystem.getParticlePositions(),
                 image: particleImage,
-                size: 0.7,
-                offset: [0, 0, -150]
+                size: initialState.particleSize,
             })
         } else {
             scene.remove(particleMesh)
@@ -140,6 +142,7 @@ export default canvas => {
             particleSystem.changeParticlesMass(change)
         },
         START_SYSTEM: toggleSystem.bind(null, true),
-        STOP_SYSTEM: toggleSystem.bind(null, false)
+        STOP_SYSTEM: toggleSystem.bind(null, false),
+        GET_PARTICLE_LOSS: particleSystem.getResetCounts.bind(particleSystem)
     }
 }

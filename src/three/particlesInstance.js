@@ -46,6 +46,7 @@ export default class ParticlesInstance {
         this.resetPosition = resetPosition
         this.resetVelocity = resetVelocity
         this.bounds = bounds
+        this.multiGenerationParticles = new Array(this.particles.length).fill(0)
     }
 
     generateParticlePositions(particleCount, generatedInitalPositions) {
@@ -59,9 +60,9 @@ export default class ParticlesInstance {
     }
 
     move(customForce) {
-        this.particles.forEach(particle => {
+        this.particles.forEach((particle, index) => {
             if (this.resetCondition) {
-                this.resetParticleOnConditions(particle)
+                this.resetParticleOnConditions(particle, index)
             }
     
             if (customForce) {
@@ -80,9 +81,13 @@ export default class ParticlesInstance {
         })
     }
 
-    resetParticleOnConditions(particle) {
-        if (this.resetCondition(particle)) 
+    resetParticleOnConditions(particle, index) {
+        if (this.resetCondition(particle)) {
             particle.reset(this.resetPosition, this.resetVelocity)
+            if (!this.multiGenerationParticles[index]) {
+                this.multiGenerationParticles[index] = 1
+            }
+        }
     }
 
     generateDrag(particle) {

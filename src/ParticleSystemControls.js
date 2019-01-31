@@ -1,53 +1,25 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import ProgressBar from './ProgressBar'
-import ParticleSystemPropertyController from './ParticleSystemPropertyController'
+import ParticleSystemPropertyController from './SystemPropertyController'
+import PropertyRead from './PropertyRead'
+import useHoverPop from './hooks/useHoverPop'
 import { 
 	SET_ATTRACTOR_MASS, 
 	SET_DRAG_COEFFICIENT,
-	START_SYSTEM,
-	STOP_SYSTEM
+	GET_PARTICLE_LOSS
 } from './types'
+
 
 const ParticleSystemControls = ({ 
 	particleSystemDispatch, 
 	particleSystemState,
-	particleControls 
+	particleControls,
+	isMobile
 }) => {
-	const toggleSystem = () => {
-		if (!particleSystemState.running) {
-			particleSystemDispatch({
-				type: START_SYSTEM,
-				payload: [
-					null, 
-					particleControls.START_SYSTEM
-				]
-			})
-		} else { 
-			particleSystemDispatch({
-				type: SET_ATTRACTOR_MASS,
-				payload: [
-					0, 
-					particleControls.SET_ATTRACTOR_MASS
-				]
-			})
-
-			setTimeout(() => { 
-				particleSystemDispatch({
-					type: STOP_SYSTEM,
-					payload: [
-						null, 
-						particleControls.STOP_SYSTEM
-					]
-				})
-			}, 1000)
-		}
-
-	}
 
 	useEffect(() => {
-		//Initial adjustment keeps particles in bounds
-
-		if (particleControls.SET_ATTRACTOR_MASS && particleSystemState.running) {
+		if (Object.keys(particleControls).length && particleSystemState.running) {
+			//Initial adjustment keeps particles in bounds
 			particleSystemDispatch({
 				type: SET_ATTRACTOR_MASS,
 				payload: [
@@ -55,83 +27,85 @@ const ParticleSystemControls = ({
 					particleControls.SET_ATTRACTOR_MASS
 				]
 			})
+
+			//periodically check particle loss, instead of calling every frame or loss
+			const lossCheckInterval = setInterval(() => {
+				particleSystemDispatch({
+					type: GET_PARTICLE_LOSS,
+					payload: [
+						particleControls[GET_PARTICLE_LOSS](), 
+						() => {}
+					]
+				})
+			}, 500)
+
+			return () => clearTimeout(lossCheckInterval)
 		}
 	}, [particleSystemState.running])
 
+	const { hoverStyling, hoverEventHandlers  } = useHoverPop(2)
+
+	const styles = {
+		mainContainer: {
+			margin: '0px 20px 0px 20px',
+			display: 'flex'
+		},
+		outerControllerContainer: {
+			display: 'flex',
+			alignItems: 'center'
+		},
+		innerControllerContainer: {
+			padding: '0px 10px 0px 10px',
+			display: 'flex',
+			flexDirection: 'column',
+			alignItems: 'center',
+		},
+		label: {
+			transform: 'rotate(270deg)',
+			transformOrigin: 'left top 0',
+			float: 'left',
+			width: 12
+		},
+		progressBar: {
+			height: isMobile ? 200 : 400
+		}
+	}
+
 	return (
-		<>
-			<button onClick={toggleSystem}>start</button>
-			<h2 style={{ transform: 'rotate(270deg)', height: 150 }}>Field Strength</h2>
-			<div style={{ 
-				margin: 20
-			}}>
-				<ParticleSystemPropertyController 
-				particleSystemProperty={particleSystemState.attractorMass}
-				particleSystemDispatch={particleSystemDispatch}
-				particleSystemPropertyControl={particleControls.SET_ATTRACTOR_MASS}
-				actionType={SET_ATTRACTOR_MASS}
-				render={
-					({
-						particleSystemProperty,
-						dispatchHandler,
-						increment$,
-						incrementHandler,
-						decrement$,
-						decrementHandler
-					}) => (
-						<ProgressBar
+		<div style={styles.mainContainer}>
+			<div style={styles.outerControllerContainer}>
+				<p style={styles.label}>Strength</p>
+				<div 
+					style={{ ...styles.innerControllerContainer, ...hoverStyling(1.02, 200, 0) }} 
+					{...hoverEventHandlers(0)}
+				>
+					<ParticleSystemPropertyController 
+					particleSystemProperty={particleSystemState.attractorMass}
+					particleSystemDispatch={particleSystemDispatch}
+					particleSystemPropertyControl={particleControls.SET_ATTRACTOR_MASS}
+					actionType={SET_ATTRACTOR_MASS}
+					render={
+						({
+							particleSystemProperty,
+							dispatchHandler,
+							increment$,
+							incrementHandler,
+							decrement$,
+							decrementHandler
+						}) => (
+							<ProgressBar
 								level={(100 / 10) * particleSystemProperty} 
-								height={400}
+								height={styles.progressBar.height}
 								width={30}
 								margin={5}
 								incrementSideEffect={() => dispatchHandler(0.5)}
 								decrementSideEffect={() => dispatchHandler(-0.5)}
 								transitionDuration={1000}
-								incrementValue={100 / 10}
-								decrementValue={100 / 50}
+								incrementValue={100 / 5}
+								decrementValue={100 / 25}
 								border="1px solid grey"
 								borderRadius={15}
 								color="linear-gradient(red, orange)"
-								increment$={increment$}
-								incrementEventHandler={incrementHandler}
-								decrement$={decrement$}
-								decrementEventHandler={decrementHandler}
-						/>
-					)
-				} 
-			/>
-			<h2>{particleSystemState.attractorMass}</h2>
-		</div>
-		<div style={{ margin: 20 }}>
-			<ParticleSystemPropertyController 
-					particleSystemProperty={particleSystemState.dragCoefficient}
-					running={particleSystemState.running}
-					particleSystemDispatch={particleSystemDispatch}
-					particleSystemPropertyControl={particleControls.SET_DRAG_COEFFICIENT}
-					actionType={SET_DRAG_COEFFICIENT}
-					render={
-						({
-						particleSystemProperty,
-						dispatchHandler,
-						increment$,
-						incrementHandler,
-						decrement$,
-						decrementHandler
-						}) => (
-							<ProgressBar
-								level={(100 / 0.001) * particleSystemProperty} 
-								height={400}
-								width={30}
-								margin={5}
-								incrementSideEffect={() => dispatchHandler(0.0001)}
-								decrementSideEffect={() => dispatchHandler(-0.0001)}
-								transitionDuration={1200}
-								incrementValue={100}
-								decrementValue={100}
-								decayDuration={particleSystemState.running ? 1200 : 0}
-								border="1px solid grey"
-								borderRadius={15}
-								color="linear-gradient(aqua, blue)"
 								increment$={increment$}
 								incrementEventHandler={incrementHandler}
 								decrement$={decrement$}
@@ -140,10 +114,63 @@ const ParticleSystemControls = ({
 						)
 					} 
 				/>
-				<p>resistance</p>
-				<h2>{particleSystemState.dragCoefficient}</h2>
+				<PropertyRead 
+					read={particleSystemState.attractorMass}
+					dPlaces={1} 
+				/>
 			</div>
-		</>
+		</div>
+		<div style={styles.outerControllerContainer}>
+			<p style={styles.label}>Resistance</p>
+			<div 
+				style={{ ...styles.innerControllerContainer, ...hoverStyling(1.02, 200, 1) }} 
+				{...hoverEventHandlers(1)}
+			>
+				<ParticleSystemPropertyController 
+						particleSystemProperty={particleSystemState.dragCoefficient}
+						running={particleSystemState.running}
+						particleSystemDispatch={particleSystemDispatch}
+						particleSystemPropertyControl={particleControls.SET_DRAG_COEFFICIENT}
+						actionType={SET_DRAG_COEFFICIENT}
+						render={
+							({
+							particleSystemProperty,
+							dispatchHandler,
+							increment$,
+							incrementHandler,
+							decrement$,
+							decrementHandler
+							}) => (
+								<ProgressBar
+									level={(100 / 0.001) * particleSystemProperty} 
+									height={styles.progressBar.height}
+									width={30}
+									margin={5}
+									incrementSideEffect={() => dispatchHandler(0.0001)}
+									decrementSideEffect={() => dispatchHandler(-0.0001)}
+									transitionDuration={1200}
+									incrementValue={100}
+									decrementValue={100}
+									decayDuration={particleSystemState.running ? 1200 : 0}
+									border="1px solid grey"
+									borderRadius={15}
+									color="linear-gradient(aqua, blue)"
+									increment$={increment$}
+									incrementEventHandler={incrementHandler}
+									decrement$={decrement$}
+									decrementEventHandler={decrementHandler}
+								/>
+							)
+						} 
+					/>
+					<PropertyRead 
+						read={particleSystemState.dragCoefficient} 
+						weight={10000}
+						dPlaces={0}  
+					/>
+				</div>
+			</div>
+		</div>
 	)
 }
 
