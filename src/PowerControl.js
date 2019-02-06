@@ -67,7 +67,7 @@ const PowerControl = ({
                 render={({ increment$, incrementHandler}) => (
                     <ProgressBar
                         level={power} 
-                        height={isMobile ? 200 : 400}
+                        height={isMobile ? 150 : 400}
                         width={50}
                         margin={5}
                         incrementSideEffect={() => setPowerWhenNotRunning(5)}

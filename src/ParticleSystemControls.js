@@ -30,15 +30,13 @@ const ParticleSystemControls = ({
 
 			//periodically check particle loss, instead of calling every frame or loss
 			const lossCheckInterval = setInterval(() => {
-				requestIdleCallback(() => (
-					particleSystemDispatch({
-						type: GET_PARTICLE_LOSS,
-						payload: [
-							particleControls[GET_PARTICLE_LOSS](), 
-							() => {}
-						]
-					})
-				))
+				particleSystemDispatch({
+					type: GET_PARTICLE_LOSS,
+					payload: [
+						particleControls[GET_PARTICLE_LOSS](), 
+						() => {}
+					]
+				})
 			}, 500)
 
 			return () => clearTimeout(lossCheckInterval)
@@ -67,7 +65,7 @@ const ParticleSystemControls = ({
 			width: 12
 		},
 		progressBar: {
-			height: isMobile ? 200 : 400
+			height: isMobile ? 150 : 400
 		}
 	}
 

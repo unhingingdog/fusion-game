@@ -1,14 +1,16 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import useHoverPop from './hooks/useHoverPop'
 
-export default ({ running, setPowerWhenNotRunning, toggleSystem  }) => {
+export default ({ running, setPowerWhenNotRunning, toggleSystem, power  }) => {
     const { hoverStyling, hoverEventHandlers } = useHoverPop()
-    const [ gradientAngle, setGradientAngle ] = useState(10)
+    const [ clickStyled, setClickStyled ] = useState(false)
+    const [ locked, setLock ] = useState(false)
 
     const style = {
         color: `${running ? 'orange' : '#cdea3a'}`,
-        background: 'transparent',
-        borderRadius: 20,
+        background: clickStyled ? 
+            `rgba(255,255,255, ${Math.max(0.2, power / 100)})` 
+            : 'transparent',
         borderImage: 'linear-gradient(to right, red , yellow)',
         borderImageSlice: 5,
         height: 40,
@@ -19,8 +21,15 @@ export default ({ running, setPowerWhenNotRunning, toggleSystem  }) => {
     }
 
     const clickHandler = () => {
-        running ? toggleSystem() : setPowerWhenNotRunning(5)
+            if (!locked) toggleSystem()
+            setClickStyled(true)
+            setTimeout(() => setClickStyled(false), 100)
     }
+
+    useEffect(() => {
+        if (running && !locked) setLock(true)
+        setTimeout(() => setLock(false), 8000)
+    }, [running])
 
     return(
         <button 
@@ -28,7 +37,11 @@ export default ({ running, setPowerWhenNotRunning, toggleSystem  }) => {
             {...hoverEventHandlers()}
             onClick={clickHandler}
         >
-            {running ? 'shut down' : 'Ignite'}
+            {
+                running ? 
+                    locked ? 'locked' : 'shut down' 
+                    : 'Ignite'
+            }
         </button>
     )
     

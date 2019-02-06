@@ -29,7 +29,7 @@ const BarPresentational = props => {
         container: {
             border,
             width: width + (margin * 2),
-            height: height + (margin * 2),
+            minHeight: height + (margin * 2),
             display: 'flex',
             alignItems: 'flex-end',
             justifyContent: 'center',
