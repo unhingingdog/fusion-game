@@ -16,11 +16,8 @@ export default (elementCount = 1) => {
 
     const hoverStyling = (scale, duration, elementIndex = 0) => ({
         transform: elements[elementIndex] ? `scale(${scale})` : 'none',
-        transition: `all ${duration / 1000}s ease-in-out`
+        transition: `transform ${duration / 1000}s ease-in-out`
     })
 
-    return { 
-        hoverEventHandlers,
-        hoverStyling 
-    }
+    return { hoverEventHandlers, hoverStyling  }
 }

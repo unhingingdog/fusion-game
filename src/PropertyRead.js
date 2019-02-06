@@ -2,7 +2,7 @@ import React from 'react'
 
 export default ({ read, weight, dPlaces, percentageMax }) => {
     const style = {
-         
+        lineHeight: 0
     }
 
     const value = percentageMax ? 

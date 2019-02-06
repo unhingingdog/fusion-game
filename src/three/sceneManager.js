@@ -65,7 +65,7 @@ export default canvas => {
         ]
     })
 
-    camera.position.set( 0, -85, 35 )
+    camera.position.set( 0, -70, 50 )
     const controls = new OrbitControls(camera, canvas)
     controls.maxPolarAngle = 2.8
     controls.minPolarAngle = 1.5

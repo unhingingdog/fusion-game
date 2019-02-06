@@ -30,20 +30,20 @@ const ParticleSystemControls = ({
 
 			//periodically check particle loss, instead of calling every frame or loss
 			const lossCheckInterval = setInterval(() => {
-				particleSystemDispatch({
-					type: GET_PARTICLE_LOSS,
-					payload: [
-						particleControls[GET_PARTICLE_LOSS](), 
-						() => {}
-					]
-				})
+				requestIdleCallback(() => (
+					particleSystemDispatch({
+						type: GET_PARTICLE_LOSS,
+						payload: [
+							particleControls[GET_PARTICLE_LOSS](), 
+							() => {}
+						]
+					})
+				))
 			}, 500)
 
 			return () => clearTimeout(lossCheckInterval)
 		}
 	}, [particleSystemState.running])
-
-	const { hoverStyling, hoverEventHandlers  } = useHoverPop(2)
 
 	const styles = {
 		mainContainer: {
@@ -55,7 +55,7 @@ const ParticleSystemControls = ({
 			alignItems: 'center'
 		},
 		innerControllerContainer: {
-			padding: '0px 10px 0px 10px',
+			margin: '0px 10px 0px 10px',
 			display: 'flex',
 			flexDirection: 'column',
 			alignItems: 'center',
@@ -71,12 +71,14 @@ const ParticleSystemControls = ({
 		}
 	}
 
+	const { hoverStyling, hoverEventHandlers } = useHoverPop(2)
+
 	return (
 		<div style={styles.mainContainer}>
 			<div style={styles.outerControllerContainer}>
 				<p style={styles.label}>Strength</p>
 				<div 
-					style={{ ...styles.innerControllerContainer, ...hoverStyling(1.02, 200, 0) }} 
+					style={{ ...styles.innerControllerContainer, ...hoverStyling(1.01, 200, 0) }} 
 					{...hoverEventHandlers(0)}
 				>
 					<ParticleSystemPropertyController 
@@ -94,13 +96,13 @@ const ParticleSystemControls = ({
 							decrementHandler
 						}) => (
 							<ProgressBar
-								level={(100 / 10) * particleSystemProperty} 
+								level={(100 / 4) * particleSystemProperty} 
 								height={styles.progressBar.height}
 								width={30}
 								margin={5}
 								incrementSideEffect={() => dispatchHandler(0.5)}
 								decrementSideEffect={() => dispatchHandler(-0.5)}
-								transitionDuration={1000}
+								transitionDuration={500}
 								incrementValue={100 / 5}
 								decrementValue={100 / 25}
 								border="1px solid grey"
@@ -123,7 +125,7 @@ const ParticleSystemControls = ({
 		<div style={styles.outerControllerContainer}>
 			<p style={styles.label}>Resistance</p>
 			<div 
-				style={{ ...styles.innerControllerContainer, ...hoverStyling(1.02, 200, 1) }} 
+				style={{ ...styles.innerControllerContainer, ...hoverStyling(1.01, 200, 1) }} 
 				{...hoverEventHandlers(1)}
 			>
 				<ParticleSystemPropertyController 
@@ -148,10 +150,10 @@ const ParticleSystemControls = ({
 									margin={5}
 									incrementSideEffect={() => dispatchHandler(0.0001)}
 									decrementSideEffect={() => dispatchHandler(-0.0001)}
-									transitionDuration={1200}
+									transitionDuration={400}
 									incrementValue={100}
 									decrementValue={100}
-									decayDuration={particleSystemState.running ? 1200 : 0}
+									decayDuration={particleSystemState.running ? 400 : 0}
 									border="1px solid grey"
 									borderRadius={15}
 									color="linear-gradient(aqua, blue)"

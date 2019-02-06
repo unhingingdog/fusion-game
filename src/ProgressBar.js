@@ -16,7 +16,7 @@ const BarPresentational = props => {
         border,
         color,
         transitionDuration,
-        id
+        zeroOnFull
     } = props
 
     width = width || 30
@@ -53,7 +53,6 @@ const BarPresentational = props => {
             style={styles.container} 
             onClick={incrementEventHandler ? incrementEventHandler : () => {}}
             level={level}
-            id={id}
         >
             <div 
                 style={styles.inner} 

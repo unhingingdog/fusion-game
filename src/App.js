@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useReducer } from 'react'
 import ParticleSystemControls from './ParticleSystemControls'
 import PowerControl from './PowerControl'
+import SystemStatus from './SystemStatus'
 import ReactorWrapper from './ReactorWrapper'
 import particleSystemReducer from './particleSystemReducer'
 import initialParticleSystemState from './initialState'
@@ -34,7 +35,14 @@ const App = () => {
       justifyContent: 'center' 
     },
     controlsContainer: {
-      display: 'flex'
+      display: 'flex',
+      alignItems: 'flex-start'
+    },
+    credit: { 
+      textDecoration: 'none', 
+      marginTop: 0,
+      fontSize: 11, 
+      color: 'white' 
     },
     canvasHeight: window.screen.width / 4,
     canvasWidth: (window.screen.width / 4)
@@ -49,7 +57,7 @@ const App = () => {
       alignItems: 'center',
       padding: 0,
       margin: 0,
-      height: '100vh'
+      height: '100vh',
     },
     gameContainer: { 
       display: 'flex',
@@ -58,7 +66,13 @@ const App = () => {
       justifyContent: 'center',
     },
     controlsContainer: {
-      display: 'flex',
+      display: 'flex'
+    },
+    credit: { 
+      textDecoration: 'none', 
+      marginTop: 35,
+      fontSize: 10, 
+      color: 'white' 
     },
     canvasHeight: window.screen.height / 4.5,
     canvasWidth: window.screen.width / 2
@@ -72,18 +86,28 @@ const App = () => {
         <div style={styles.controlsContainer}>
           <PowerControl
             running={particleSystemState.running}
+            magStrength={particleSystemState.attractorMass}
+            maxMagStrength={4}
             totalParticles={initialParticleSystemState.particleCount}
             particleLoss={particleSystemState.particleLoss}
             toggleSystem={toggleSystem}
             isMobile={isMobile}
           />
-          <ParticleSystemControls
-            particleSystemDispatch={particleSystemDispatch}
-            particleSystemState={particleSystemState}
-            particleControls={particleControls}
-            toggleSystem={toggleSystem}
-            isMobile={isMobile}
-          />
+          <div style={styles.particleSystemControlsContaine}>
+            <ParticleSystemControls
+              particleSystemDispatch={particleSystemDispatch}
+              particleSystemState={particleSystemState}
+              particleControls={particleControls}
+              toggleSystem={toggleSystem}
+              isMobile={isMobile}
+            />
+            <SystemStatus
+              running={particleSystemState.running}
+              particleLoss={particleSystemState.particleLoss}
+              totalParticles={particleSystemState.particleCount}
+              magStrength={particleSystemState.attractorMass}
+            />
+          </div>
         </div>
         <ReactorWrapper 
           width={styles.canvasWidth} 
@@ -91,7 +115,9 @@ const App = () => {
           passParticleControlsUp={setControls} 
         />
       </div>
-      <small>Hamish Gilkison &copy; 2019</small>
+      <a href="http://h12n.nz" target="_blank" style={styles.credit}>
+          Hamish Gilkison &copy; 2019
+      </a>
     </div>
   )
 
